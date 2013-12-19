@@ -1,0 +1,54 @@
+{
+    "versionLabel": "1.0",
+    "uuid": "26e94ec2-9f28-4fde-8cdc-0222902b2ebb",
+    "appKeys": {},
+    "longName": "TimeTool",
+    "versionCode": 1,
+    "capabilities": [
+        ""
+    ],
+    "shortName": "TimeTool",
+    "companyName": "Stopka",
+    "watchapp": {
+        "watchface": false
+    },
+    "resources": {
+        "media": [
+            {
+                "type": "png",
+                "name": "BUTTONS",
+                "file": "images/buttons.png"
+            },
+            {
+                "menuIcon": true,
+                "type": "png",
+                "name": "LOGO",
+                "file": "images/stopwatch.png"
+            },
+            {
+                "characterRegex": "[dhms]",
+                "type": "font",
+                "name": "RESOURCE_FONT_DEJAVU_SANS_12",
+                "file": "fonts/DejaVuSans.ttf"
+            },
+            {
+                "characterRegex": "[:0-9. ]",
+                "type": "font",
+                "name": "RESOURCE_FONT_DEJAVU_SANS_18",
+                "file": "fonts/DejaVuSans.ttf"
+            },
+            {
+                "characterRegex": "[:0-9. ]",
+                "type": "font",
+                "name": "RESOURCE_FONT_DEJAVU_SANS_22",
+                "file": "fonts/DejaVuSans.ttf"
+            },
+            {
+                "characterRegex": "[0-9.: ]",
+                "type": "font",
+                "name": "RESOURCE_FONT_DEJAVU_SANS_BOLD_30",
+                "file": "fonts/DejaVuSans-Bold.ttf"
+            }
+        ]
+    }
+}
