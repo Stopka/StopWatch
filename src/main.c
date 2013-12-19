@@ -3,17 +3,17 @@
 
 Window* window;	
 
-void handle_init(void) {
+void handle_init() {
 	window = create_stopwatch_window();
 	window_stack_push(window, true);
 }
 
-void handle_deinit(void) {
-	  window_stack_pop(window, true);
+void handle_deinit() {
+	  window_stack_pop(true);
 	  window_destroy(window);
 }
 
-int main(void) {
+int main() {
 	  handle_init();
 	  app_event_loop();
 	  handle_deinit();

@@ -1,5 +1,8 @@
-#include <pebble.h>
-	
-#define FONT_TIME_DISPLAY RESOURCE_FONT_DEJAVU_SANS_BOLD_30
+#ifndef STOPWATCH_H
+#define STOPWATCH_H
 
-void create_stopwatch_window();
+#include <pebble.h>
+
+Window* create_stopwatch_window();
+
+#endif

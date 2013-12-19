@@ -26,27 +26,27 @@
                 "file": "images/stopwatch.png"
             },
             {
+                "characterRegex": "[:0-9. ]",
+                "type": "font",
+                "name": "FONT_DEJAVU_SANS_22",
+                "file": "fonts/DejaVuSans.ttf"
+            },
+            {
+                "characterRegex": "[:0-9. ]",
+                "type": "font",
+                "name": "FONT_DEJAVU_SANS_18",
+                "file": "fonts/DejaVuSans.ttf"
+            },
+            {
                 "characterRegex": "[dhms]",
                 "type": "font",
-                "name": "RESOURCE_FONT_DEJAVU_SANS_12",
-                "file": "fonts/DejaVuSans.ttf"
-            },
-            {
-                "characterRegex": "[:0-9. ]",
-                "type": "font",
-                "name": "RESOURCE_FONT_DEJAVU_SANS_18",
-                "file": "fonts/DejaVuSans.ttf"
-            },
-            {
-                "characterRegex": "[:0-9. ]",
-                "type": "font",
-                "name": "RESOURCE_FONT_DEJAVU_SANS_22",
+                "name": "FONT_DEJAVU_SANS_12",
                 "file": "fonts/DejaVuSans.ttf"
             },
             {
                 "characterRegex": "[0-9.: ]",
                 "type": "font",
-                "name": "RESOURCE_FONT_DEJAVU_SANS_BOLD_30",
+                "name": "FONT_DEJAVU_SANS_BOLD_25",
                 "file": "fonts/DejaVuSans-Bold.ttf"
             }
         ]
