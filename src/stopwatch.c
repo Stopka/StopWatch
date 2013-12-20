@@ -76,12 +76,12 @@ static void window_load(Window *window) {
 	///////////////////////////////////////////////////////////////////
 	// Laps display
 	///////////////////////////////////////////////////////////////////
-	laps_display=scroll_layer_create(GRect(0,46,121,146));
+	laps_display=scroll_layer_create(GRect(0,46,121,105));
 	layer_add_child(window_get_root_layer(window), (Layer*)laps_display);
 	
 	// Laps ////////////////////////////////////////////////////////////
 	font=fonts_load_custom_font(resource_get_handle(FONT_LAPS_DISPLAY_LAP));
-	for(int i=0;i<5;i++){
+	for(int i=0;i<7;i++){
 		char* string="00 00:00.00";
 		//string[1]='0'+i;
 		laps_display_laps[i]=text_layer_create(GRect(0, 20*i, 121, 20));
@@ -92,6 +92,7 @@ static void window_load(Window *window) {
 		text_layer_set_text	(laps_display_laps[i],string);
 		scroll_layer_add_child(laps_display, (Layer *)laps_display_laps[i]);
 	}
+	scroll_layer_set_content_size(laps_display,GSize(121,20*7)); 
 	
 	///////////////////////////////////////////////////////////////////
 	// Action bar
@@ -121,7 +122,7 @@ static void window_unload(Window *window) {
 	}
 	//Laps display
 	scroll_layer_destroy(laps_display);
-	for(int i=0;i<5;i++){
+	for(int i=0;i<7;i++){
 		text_layer_destroy(laps_display_laps[i]);
 	}
 	//Action bar
