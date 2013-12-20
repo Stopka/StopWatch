@@ -1,5 +1,5 @@
 #include <pebble.h>
-#include "stopwatch.h"
+#include "stopwatch_window.h"
 
 Window* window;	
 
