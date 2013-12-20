@@ -1,4 +1,5 @@
 #include "stopwatch.h"
+#include <string.h>
 	
 #define FONT_TIME_DISPLAY RESOURCE_ID_FONT_DEJAVU_SANS_BOLD_25
 #define FONT_TIME_DISPLAY_LABEL RESOURCE_ID_FONT_DEJAVU_SANS_12
@@ -79,22 +80,18 @@ static void window_load(Window *window) {
 	layer_add_child(window_get_root_layer(window), (Layer*)laps_display);
 	
 	// Laps ////////////////////////////////////////////////////////////
-	laps_display_laps[0]=text_layer_create(GRect(0, 0, 121, 20));
 	font=fonts_load_custom_font(resource_get_handle(FONT_LAPS_DISPLAY_LAP));
-	text_layer_set_font(laps_display_laps[0],font);
-	text_layer_set_background_color	(laps_display_laps[0],GColorClear);
-	text_layer_set_text_color(laps_display_laps[0],GColorWhite);
-	text_layer_set_text_alignment(laps_display_laps[0], GTextAlignmentCenter);
-	text_layer_set_text	(laps_display_laps[0],"01 00:00.00");
-	scroll_layer_add_child(laps_display, (Layer *)laps_display_laps[0]);
-	
-	laps_display_laps[1]=text_layer_create(GRect(0, 20, 121, 20));
-	text_layer_set_font(laps_display_laps[1],font);
-	text_layer_set_background_color	(laps_display_laps[1],GColorClear);
-	text_layer_set_text_color(laps_display_laps[1],GColorWhite);
-	text_layer_set_text_alignment(laps_display_laps[1], GTextAlignmentCenter);
-	text_layer_set_text	(laps_display_laps[1],"02 00:00.00");
-	scroll_layer_add_child(laps_display, (Layer *)laps_display_laps[1]);
+	for(int i=0;i<5;i++){
+		char* string="00 00:00.00";
+		//string[1]='0'+i;
+		laps_display_laps[i]=text_layer_create(GRect(0, 20*i, 121, 20));
+		text_layer_set_font(laps_display_laps[i],font);
+		text_layer_set_background_color	(laps_display_laps[i],GColorClear);
+		text_layer_set_text_color(laps_display_laps[i],GColorWhite);
+		text_layer_set_text_alignment(laps_display_laps[i], GTextAlignmentCenter);
+		text_layer_set_text	(laps_display_laps[i],string);
+		scroll_layer_add_child(laps_display, (Layer *)laps_display_laps[i]);
+	}
 	
 	///////////////////////////////////////////////////////////////////
 	// Action bar
@@ -124,7 +121,7 @@ static void window_unload(Window *window) {
 	}
 	//Laps display
 	scroll_layer_destroy(laps_display);
-	for(int i=0;i<2;i++){
+	for(int i=0;i<5;i++){
 		text_layer_destroy(laps_display_laps[i]);
 	}
 	//Action bar
