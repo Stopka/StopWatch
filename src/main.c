@@ -1,20 +1,16 @@
 #include <pebble.h>
-#include "stopwatch_window.h"
+#include "stopwatch.h"
 
-Window* window;	
-
-void handle_init() {
-	window = create_stopwatch_window();
-	window_stack_push(window, true);
+void init() {
+	stopwatch_init();
 }
 
-void handle_deinit() {
-	  window_stack_pop(true);
-	  window_destroy(window);
+void deinit() {
+	stopwatch_deinit();  
 }
 
 int main() {
-	  handle_init();
+	  init();
 	  app_event_loop();
-	  handle_deinit();
+	  deinit();
 }

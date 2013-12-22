@@ -1,4 +1,5 @@
 #include "stopwatch_window.h"
+#include "stopwatch_model.h"
 #include <string.h>
 	
 #define FONT_TIME_DISPLAY RESOURCE_ID_FONT_DEJAVU_SANS_BOLD_25
@@ -10,6 +11,7 @@
 #define ICON_START RESOURCE_ID_ICON_STOPWATCH_START
 #define ICON_STOP RESOURCE_ID_ICON_STOPWATCH_STOP
 #define ICON_NEXT RESOURCE_ID_ICON_DOWN
+#define IMG_MARK RESOURCE_ID_IMG_MARK
 //window
 static Window* stopwatch_window;
 //Time display
@@ -19,25 +21,30 @@ static TextLayer* time_display_labels[7];
 char *measure_labels[5] = {"d","h","m","s","ms"};
 //Laps
 static ScrollLayer* laps_display;
-static TextLayer* laps_display_laps[30];
+static TextLayer* laps_display_laps[STOPWATCH_MAX_LAPS];
+static InverterLayer* laps_display_mark;
 //Action bar
 static ActionBarLayer* action_bar;	
 
 //STATE
 static int measure_offset=2;
 static int measure_offset_laps=2;
-static bool running=false;
 
-static void update_state_measure(){
+static void stopwatch_window_update_measure(){
 	for(int i=0;i<6;i++){
 		text_layer_set_text	(time_display_labels[i],measure_labels[(i<3?measure_offset:measure_offset_laps)+(i%3)]);
+		layer_mark_dirty((Layer *)time_display_labels[i]);
 	}
 }
 
-static void update_state_running(){
+static void stopwatch_window_update_running(){
+	bool running=stopwatch_model_isRunning();
 	action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, gbitmap_create_with_resource(running?ICON_LAP:ICON_RESET));
 	action_bar_layer_set_icon(action_bar, BUTTON_ID_SELECT, gbitmap_create_with_resource(running?ICON_STOP:ICON_START));
+	layer_mark_dirty((Layer *)action_bar);
 }
+
+static void click_config_provider(void *context);
 
 static void window_load(Window *window) {
 	///////////////////////////////////////////////////////////////////
@@ -75,7 +82,7 @@ static void window_load(Window *window) {
 		text_layer_set_overflow_mode(time_display_labels[i],GTextOverflowModeFill);
 		layer_add_child((Layer *)time_display, (Layer *)time_display_labels[i]);
 	}
-	update_state_measure();
+	stopwatch_window_update_measure();
 	text_layer_set_font(time_display_labels[6],font);
 	text_layer_set_background_color	(time_display_labels[6],GColorWhite);
 	text_layer_set_text_color(time_display_labels[6],GColorBlack);
@@ -103,7 +110,9 @@ static void window_load(Window *window) {
 		text_layer_set_text	(laps_display_laps[i],string);
 		scroll_layer_add_child(laps_display, (Layer *)laps_display_laps[i]);
 	}
-	scroll_layer_set_content_size(laps_display,GSize(121,20*7)); 
+	laps_display_mark=inverter_layer_create(GRect(0,0,30,20));
+	scroll_layer_add_child(laps_display,(Layer*)laps_display_mark);
+	scroll_layer_set_content_size(laps_display,GSize(121,20*(7+1)));
 	
 	///////////////////////////////////////////////////////////////////
 	// Action bar
@@ -111,9 +120,9 @@ static void window_load(Window *window) {
 	action_bar = action_bar_layer_create();
 	action_bar_layer_add_to_window(action_bar, window);
 	action_bar_layer_set_background_color(action_bar, GColorWhite);
-	update_state_running();
+	stopwatch_window_update_running();
   	action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, gbitmap_create_with_resource(ICON_NEXT));
-	
+	action_bar_layer_set_click_config_provider(action_bar,click_config_provider);
 }
 
 static void window_appear(Window *window) {
@@ -136,16 +145,57 @@ static void window_unload(Window *window) {
 	for(int i=0;i<7;i++){
 		text_layer_destroy(laps_display_laps[i]);
 	}
+	inverter_layer_destroy(laps_display_mark);	
+
 	//Action bar
 	action_bar_layer_destroy(action_bar);
 }
 
+////////////////////////////////////////////////////////////////////
+//Event handlers
+////////////////////////////////////////////////////////////////////
+static void handle_up_single_click(ClickRecognizerRef recognizer, void *context){
+	if(stopwatch_model_isRunning()){
+		stopwatch_model_newlap();
+	}else{
+		stopwatch_model_reset();
+	}
+}
+
+static void handle_up_long_click(ClickRecognizerRef recognizer, void *context){
+	stopwatch_model_reset();
+}
+
+static void handle_select_single_click(ClickRecognizerRef recognizer, void *context){
+	if(stopwatch_model_isRunning()){
+		stopwatch_model_stop();
+	}else{
+		stopwatch_model_start();
+	}
+}
+
+static void handle_down_single_click(ClickRecognizerRef recognizer, void *context){
+
+}
+
+static void handle_down_long_click(ClickRecognizerRef recognizer, void *context){
+
+}
+
+static void click_config_provider(void *context) {
+  window_single_click_subscribe(BUTTON_ID_UP, (ClickHandler) handle_up_single_click);
+  window_single_click_subscribe(BUTTON_ID_SELECT, (ClickHandler) handle_select_single_click);
+  window_single_click_subscribe(BUTTON_ID_DOWN, (ClickHandler) handle_down_single_click);
+  
+  window_long_click_subscribe(BUTTON_ID_UP, 0,(ClickHandler) handle_up_long_click,NULL);
+  window_long_click_subscribe(BUTTON_ID_DOWN, 0,(ClickHandler) handle_down_long_click,NULL);
+}
 
 
 ////////////////////////////////////////////////////////////////////
 //Public intarface
 ////////////////////////////////////////////////////////////////////
-Window* create_stopwatch_window(){
+void stopwatch_window_init(){
 	stopwatch_window = window_create();
 	window_set_background_color	(stopwatch_window,GColorBlack);	
 	window_set_window_handlers(stopwatch_window, (WindowHandlers) {
@@ -154,20 +204,10 @@ Window* create_stopwatch_window(){
 		.disappear = window_disappear,
 		.unload = window_unload
 	});
-	return stopwatch_window;
+	window_stack_push(stopwatch_window, true);
 }
 
-static void stopwatch_window_setRunning(bool run){
-	running=run;
-	update_state_running();
-}
-
-static void stopwatch_window_setMeasure(int offset){
-	measure_offset=offset;
-	update_state_measure();
-}
-
-static void stopwatch_window_setLapMeasure(int offset){
-	measure_offset_laps=offset;
-	update_state_measure();
+void stopwatch_window_deinit(){
+	window_stack_pop(true);
+	window_destroy(stopwatch_window);
 }

@@ -2,12 +2,12 @@
     "versionLabel": "1.0",
     "uuid": "26e94ec2-9f28-4fde-8cdc-0222902b2ebb",
     "appKeys": {},
-    "longName": "TimeTool",
+    "longName": "Stopka's StopWatch",
     "versionCode": 1,
     "capabilities": [
         ""
     ],
-    "shortName": "TimeTool",
+    "shortName": "StopWatch",
     "companyName": "Stopka",
     "watchapp": {
         "watchface": false
@@ -55,12 +55,6 @@
                 "characterRegex": "[:0-9. ]",
                 "type": "font",
                 "name": "FONT_DEJAVU_SANS_19",
-                "file": "fonts/DejaVuSans.ttf"
-            },
-            {
-                "characterRegex": "[:0-9. ]",
-                "type": "font",
-                "name": "FONT_DEJAVU_SANS_22",
                 "file": "fonts/DejaVuSans.ttf"
             },
             {
