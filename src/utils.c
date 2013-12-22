@@ -33,3 +33,9 @@ Time* time_getActual(){
 	time_ms	(&result->sec,&result->msec);
 	return result;
 }
+Time* time_getNull(){
+	Time* result=(Time*) malloc(sizeof(Time));
+	result->sec=0;
+	result->msec=0;
+	return result;
+}

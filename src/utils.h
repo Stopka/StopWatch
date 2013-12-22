@@ -13,5 +13,6 @@ Time* time_add(Time* a,Time* b);
 Time* time_clone(Time* t);
 
 Time* time_getActual();
+Time* time_getNull();
 
 #endif

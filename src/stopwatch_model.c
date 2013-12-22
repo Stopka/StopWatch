@@ -85,9 +85,15 @@ Time* stopwatch_model_getLapTime(int lap){
 	if(running&&lap==laps_count-1){
 		return time_subtract(time_getActual(),laps[lap]);
 	}
+	if(laps[lap]==NULL){
+		return time_getNull();
+	}
 	return time_subtract(time_clone(laps[lap+1]),laps[lap]);
 }
 Time* stopwatch_model_getLapTotalTime(int lap){
+	if(started==NULL){
+		return time_getNull();
+	}
 	if(running&&lap==laps_count-1){
 		return time_subtract(time_getActual(),started);
 	}

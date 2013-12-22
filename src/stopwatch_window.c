@@ -22,6 +22,7 @@ char *measure_labels[5] = {"d","h","m","s","ms"};
 //Laps
 static ScrollLayer* laps_display;
 static TextLayer* laps_display_laps[STOPWATCH_MAX_LAPS];
+static int laps_display_laps_count=0;
 static InverterLayer* laps_display_mark;
 //Action bar
 static ActionBarLayer* action_bar;	
@@ -34,6 +35,69 @@ static void stopwatch_window_update_measure(){
 	for(int i=0;i<6;i++){
 		text_layer_set_text	(time_display_labels[i],measure_labels[(i<3?measure_offset:measure_offset_laps)+(i%3)]);
 		layer_mark_dirty((Layer *)time_display_labels[i]);
+	}
+}
+int stopwatch_window_lap_offset(int index){
+	int result;
+	Time* time=stopwatch_model_getLapTime(index);
+	if((time->sec/(60*60*24))>0){
+		result=0;
+	}else if((time->sec/(60*60))%24>0){
+		result=1;
+	}else{
+		result=2;
+	}
+	free(time);
+	return result;
+}
+
+void stopwatch_window_update_lap(int index){
+	char* string = (char *)malloc(12*sizeof(char));
+	int shift=stopwatch_model_getTotalLapsCount()-index;
+	Time* time=stopwatch_model_getLapTime(stopwatch_model_getLapsCount()-index-1);
+	int vals[]={time->msec,time->sec%60,(time->sec/60)%60,(time->sec/(60*60))%24,(time->sec/(60*60*24))%100,(time->sec/(60*60*24*100))};
+	switch(measure_offset_laps){
+		case 0:
+			snprintf(string, 12, "%02d %02d,%02d:%02d", (shift)%100,vals[4],vals[3],vals[2]);
+			break;
+		case 1:
+			snprintf(string, 12, "%02d %02d:%02d:%02d", (shift)%100,vals[3],vals[2],vals[1]);
+			break;
+		default:
+			snprintf(string, 12, "%02d %02d:%02d.%02d", (shift)%100,vals[2],vals[1],vals[0]);
+			break;
+	}
+	text_layer_set_text	(laps_display_laps[index],string);
+	layer_mark_dirty((Layer *)laps_display_laps[index]);
+	free(time);
+}
+
+void stopwatch_window_update_laps(int count){
+	for(int i=laps_display_laps_count-1;i>=count;i--){
+		layer_remove_from_parent((Layer *) laps_display_laps[i]);	
+		text_layer_destroy(laps_display_laps[i]);
+	}
+	GFont font=fonts_load_custom_font(resource_get_handle(FONT_LAPS_DISPLAY_LAP));
+	for(int i=laps_display_laps_count;i<count;i++){
+		laps_display_laps[i]=text_layer_create(GRect(0, 20*i, 121, 20));
+		text_layer_set_font(laps_display_laps[i],font);
+		text_layer_set_background_color	(laps_display_laps[i],GColorClear);
+		text_layer_set_text_color(laps_display_laps[i],GColorWhite);
+		text_layer_set_text_alignment(laps_display_laps[i], GTextAlignmentCenter);
+		scroll_layer_add_child(laps_display, (Layer *)laps_display_laps[i]);
+	}
+	laps_display_laps_count=count;
+	scroll_layer_set_content_size(laps_display,GSize(121,20*(laps_display_laps_count)));
+	measure_offset_laps=2;
+	for(int i=0;i<laps_display_laps_count;i++){
+		int off=stopwatch_window_lap_offset(i);
+		if(off<measure_offset_laps){
+			measure_offset_laps=off;
+		}
+	}
+	stopwatch_window_update_measure();
+	for(int i=0;i<laps_display_laps_count;i++){
+		stopwatch_window_update_lap(i);
 	}
 }
 
@@ -98,21 +162,9 @@ static void window_load(Window *window) {
 	layer_add_child(window_get_root_layer(window), (Layer*)laps_display);
 	
 	// Laps ////////////////////////////////////////////////////////////
-	font=fonts_load_custom_font(resource_get_handle(FONT_LAPS_DISPLAY_LAP));
-	for(int i=0;i<7;i++){
-		char* string="00 00:00.00";
-		//string[1]='0'+i;
-		laps_display_laps[i]=text_layer_create(GRect(0, 20*i, 121, 20));
-		text_layer_set_font(laps_display_laps[i],font);
-		text_layer_set_background_color	(laps_display_laps[i],GColorClear);
-		text_layer_set_text_color(laps_display_laps[i],GColorWhite);
-		text_layer_set_text_alignment(laps_display_laps[i], GTextAlignmentCenter);
-		text_layer_set_text	(laps_display_laps[i],string);
-		scroll_layer_add_child(laps_display, (Layer *)laps_display_laps[i]);
-	}
+	stopwatch_window_update_laps(stopwatch_model_getLapsCount());
 	laps_display_mark=inverter_layer_create(GRect(0,0,30,20));
 	scroll_layer_add_child(laps_display,(Layer*)laps_display_mark);
-	scroll_layer_set_content_size(laps_display,GSize(121,20*(7+1)));
 	
 	///////////////////////////////////////////////////////////////////
 	// Action bar
@@ -142,9 +194,7 @@ static void window_unload(Window *window) {
 	}
 	//Laps display
 	scroll_layer_destroy(laps_display);
-	for(int i=0;i<7;i++){
-		text_layer_destroy(laps_display_laps[i]);
-	}
+	stopwatch_window_update_laps(0);
 	inverter_layer_destroy(laps_display_mark);	
 
 	//Action bar
@@ -159,11 +209,15 @@ static void handle_up_single_click(ClickRecognizerRef recognizer, void *context)
 		stopwatch_model_newlap();
 	}else{
 		stopwatch_model_reset();
+		stopwatch_window_update_running();
 	}
+	stopwatch_window_update_laps(stopwatch_model_getLapsCount());
 }
 
 static void handle_up_long_click(ClickRecognizerRef recognizer, void *context){
 	stopwatch_model_reset();
+	stopwatch_window_update_running();
+	stopwatch_window_update_laps(stopwatch_model_getLapsCount());
 }
 
 static void handle_select_single_click(ClickRecognizerRef recognizer, void *context){
@@ -172,6 +226,7 @@ static void handle_select_single_click(ClickRecognizerRef recognizer, void *cont
 	}else{
 		stopwatch_model_start();
 	}
+	stopwatch_window_update_running();
 }
 
 static void handle_down_single_click(ClickRecognizerRef recognizer, void *context){
