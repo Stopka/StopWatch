@@ -97,5 +97,5 @@ Time* stopwatch_model_getLapTotalTime(int lap){
 	if(running&&lap==laps_count-1){
 		return time_subtract(time_getActual(),started);
 	}
-	return time_subtract(laps[lap+1],started);
+	return time_subtract(time_clone(laps[lap+1]),started);
 }
