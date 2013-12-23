@@ -52,7 +52,7 @@ int stopwatch_window_lap_offset(int index){
 }
 
 void stopwatch_window_update_lap(int index){
-	char* string = (char *)malloc(12*sizeof(char));
+	char* string = (char*)text_layer_get_text(laps_display_laps[index]);
 	int shift=stopwatch_model_getTotalLapsCount()-index;
 	Time* time=stopwatch_model_getLapTime(stopwatch_model_getLapsCount()-index-1);
 	int vals[]={time->msec,time->sec%60,(time->sec/60)%60,(time->sec/(60*60))%24,(time->sec/(60*60*24))%100,(time->sec/(60*60*24*100))};
@@ -67,23 +67,26 @@ void stopwatch_window_update_lap(int index){
 			snprintf(string, 12, "%02d %02d:%02d.%02d", (shift)%100,vals[2],vals[1],vals[0]);
 			break;
 	}
-	text_layer_set_text	(laps_display_laps[index],string);
 	layer_mark_dirty((Layer *)laps_display_laps[index]);
 	free(time);
 }
 
 void stopwatch_window_update_laps(int count){
 	for(int i=laps_display_laps_count-1;i>=count;i--){
+		char* string = (char*)text_layer_get_text(laps_display_laps[i]);
 		layer_remove_from_parent((Layer *) laps_display_laps[i]);	
 		text_layer_destroy(laps_display_laps[i]);
+		free(string);
 	}
 	GFont font=fonts_load_custom_font(resource_get_handle(FONT_LAPS_DISPLAY_LAP));
 	for(int i=laps_display_laps_count;i<count;i++){
+		char* string = (char *)malloc(12*sizeof(char));
 		laps_display_laps[i]=text_layer_create(GRect(0, 20*i, 121, 20));
 		text_layer_set_font(laps_display_laps[i],font);
 		text_layer_set_background_color	(laps_display_laps[i],GColorClear);
 		text_layer_set_text_color(laps_display_laps[i],GColorWhite);
 		text_layer_set_text_alignment(laps_display_laps[i], GTextAlignmentCenter);
+		text_layer_set_text	(laps_display_laps[i],string);
 		scroll_layer_add_child(laps_display, (Layer *)laps_display_laps[i]);
 	}
 	laps_display_laps_count=count;
@@ -99,6 +102,32 @@ void stopwatch_window_update_laps(int count){
 	for(int i=0;i<laps_display_laps_count;i++){
 		stopwatch_window_update_lap(i);
 	}
+}
+
+void stopwatch_window_update_time(){
+	char* string = (char*)text_layer_get_text(time_display_values);
+	Time* time=stopwatch_model_getLapTotalTime(stopwatch_model_getLapsCount()-1);
+	int vals[]={time->msec,time->sec%60,(time->sec/60)%60,(time->sec/(60*60))%24,(time->sec/(60*60*24))%100,(time->sec/(60*60*24*100))};
+	if(vals[5]>0||vals[4]>0){
+			snprintf(string, 9, "%02d,%02d:%02d", vals[4],vals[3],vals[2]);
+			measure_offset=0;
+	}else if(vals[3]>0){
+			snprintf(string, 9, "%02d:%02d:%02d", vals[3],vals[2],vals[1]);
+			measure_offset=1;
+	}else{
+			snprintf(string, 9, "%02d:%02d.%02d", vals[2],vals[1],vals[0]);
+			measure_offset=2;
+	}
+	int off=stopwatch_window_lap_offset(stopwatch_model_getLapsCount()-1);
+	if(off<measure_offset_laps){
+		measure_offset_laps=off;
+		stopwatch_window_update_laps(stopwatch_model_getLapsCount());
+	}else{
+		stopwatch_window_update_lap(stopwatch_model_getLapsCount()-1);
+	}
+	stopwatch_window_update_measure();
+	layer_mark_dirty((Layer *)time_display_values);
+	free(time);
 }
 
 static void stopwatch_window_update_running(){
@@ -201,32 +230,57 @@ static void window_unload(Window *window) {
 	action_bar_layer_destroy(action_bar);
 }
 
+static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
+	stopwatch_window_update_time();
+}
+////////////////////////////////////////////////////////////////////
+//Commands
+////////////////////////////////////////////////////////////////////
+static void stopwatch_window_command_newLap(){
+	stopwatch_model_newlap();
+	stopwatch_window_update_laps(stopwatch_model_getLapsCount());
+}
+
+static void stopwatch_window_command_reset(){
+	stopwatch_model_reset();
+	tick_timer_service_unsubscribe();
+	stopwatch_window_update_running();
+	stopwatch_window_update_laps(stopwatch_model_getLapsCount());
+}
+
+static void stopwatch_window_command_start(){
+	stopwatch_model_start();
+	tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
+	stopwatch_window_update_running();
+}
+
+static void stopwatch_window_command_stop(){
+	stopwatch_model_stop();
+	tick_timer_service_unsubscribe();
+	stopwatch_window_update_running();
+}
+
 ////////////////////////////////////////////////////////////////////
 //Event handlers
 ////////////////////////////////////////////////////////////////////
 static void handle_up_single_click(ClickRecognizerRef recognizer, void *context){
 	if(stopwatch_model_isRunning()){
-		stopwatch_model_newlap();
+		stopwatch_window_command_newLap();
 	}else{
-		stopwatch_model_reset();
-		stopwatch_window_update_running();
+		stopwatch_window_command_reset();
 	}
-	stopwatch_window_update_laps(stopwatch_model_getLapsCount());
 }
 
 static void handle_up_long_click(ClickRecognizerRef recognizer, void *context){
-	stopwatch_model_reset();
-	stopwatch_window_update_running();
-	stopwatch_window_update_laps(stopwatch_model_getLapsCount());
+	stopwatch_window_command_reset();
 }
 
 static void handle_select_single_click(ClickRecognizerRef recognizer, void *context){
 	if(stopwatch_model_isRunning()){
-		stopwatch_model_stop();
+		stopwatch_window_command_stop();
 	}else{
-		stopwatch_model_start();
+		stopwatch_window_command_start();
 	}
-	stopwatch_window_update_running();
 }
 
 static void handle_down_single_click(ClickRecognizerRef recognizer, void *context){
