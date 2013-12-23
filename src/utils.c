@@ -4,7 +4,7 @@ Time* time_subtract(Time* a,Time* b){
 	a->sec-=b->sec;
 	if(a->msec<b->msec){
 		a->sec--;
-		a->msec=100-b->msec;
+		a->msec=1000-b->msec;
 	}else{
 		a->msec-=b->msec;
 	}
@@ -13,8 +13,8 @@ Time* time_subtract(Time* a,Time* b){
 
 Time* time_add(Time* a,Time* b){
 	a->sec+=b->sec;
-	a->msec+=b->msec;
-	while(a->msec>=100){
+	a->msec=(a->msec+b->msec)%1000;
+	while(a->msec>=1000){
 		a->sec++;
 		a->msec-=100;	
 	}

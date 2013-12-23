@@ -18,7 +18,7 @@ static Window* stopwatch_window;
 static Layer *time_display;
 static TextLayer* time_display_values;
 static TextLayer* time_display_labels[7];
-char *measure_labels[5] = {"d","h","m","s","ms"};
+char *measure_labels[5] = {"d","h","m","s","cs"};
 //Laps
 static ScrollLayer* laps_display;
 static TextLayer* laps_display_laps[STOPWATCH_MAX_LAPS];
@@ -55,7 +55,7 @@ void stopwatch_window_update_lap(int index){
 	char* string = (char*)text_layer_get_text(laps_display_laps[index]);
 	int shift=stopwatch_model_getTotalLapsCount()-index;
 	Time* time=stopwatch_model_getLapTime(stopwatch_model_getLapsCount()-index-1);
-	int vals[]={time->msec,time->sec%60,(time->sec/60)%60,(time->sec/(60*60))%24,(time->sec/(60*60*24))%100,(time->sec/(60*60*24*100))};
+	int vals[]={time->msec/10,time->sec%60,(time->sec/60)%60,(time->sec/(60*60))%24,(time->sec/(60*60*24))%100,(time->sec/(60*60*24*100))};
 	switch(measure_offset_laps){
 		case 0:
 			snprintf(string, 12, "%02d %02d,%02d:%02d", (shift)%100,vals[4],vals[3],vals[2]);
@@ -107,7 +107,7 @@ void stopwatch_window_update_laps(int count){
 void stopwatch_window_update_time(){
 	char* string = (char*)text_layer_get_text(time_display_values);
 	Time* time=stopwatch_model_getLapTotalTime(stopwatch_model_getLapsCount()-1);
-	int vals[]={time->msec,time->sec%60,(time->sec/60)%60,(time->sec/(60*60))%24,(time->sec/(60*60*24))%100,(time->sec/(60*60*24*100))};
+	int vals[]={time->msec/10,time->sec%60,(time->sec/60)%60,(time->sec/(60*60))%24,(time->sec/(60*60*24))%100,(time->sec/(60*60*24*100))};
 	if(vals[5]>0||vals[4]>0){
 			snprintf(string, 9, "%02d,%02d:%02d", vals[4],vals[3],vals[2]);
 			measure_offset=0;
@@ -251,16 +251,16 @@ static void stopwatch_window_command_reset(){
 
 static void stopwatch_window_command_start(){
 	stopwatch_model_start();
-	tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
-	stopwatch_window_update_time();
 	stopwatch_window_update_running();
+	//stopwatch_window_update_time();
+	tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
 }
 
 static void stopwatch_window_command_stop(){
 	stopwatch_model_stop();
 	tick_timer_service_unsubscribe();
-	stopwatch_window_update_time();
 	stopwatch_window_update_running();
+	stopwatch_window_update_time();
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -287,7 +287,7 @@ static void handle_select_single_click(ClickRecognizerRef recognizer, void *cont
 }
 
 static void handle_down_single_click(ClickRecognizerRef recognizer, void *context){
-
+	stopwatch_window_update_time();
 }
 
 static void handle_down_long_click(ClickRecognizerRef recognizer, void *context){

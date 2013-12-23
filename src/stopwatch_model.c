@@ -18,7 +18,7 @@ void stopwatch_model_reset(){
 	running=false;
 	free(started);
 	started=NULL;
-	for(int i=0;i<laps_count+1;i++){
+	for(int i=0;i<=laps_count;i++){
 		if(laps[i]!=NULL){
 			free(laps[i]);
 			laps[i]=NULL;
@@ -51,7 +51,8 @@ void stopwatch_model_start(){
 		started=now;
 		laps[0]=time_clone(now);
 	}else{
-		Time* delay=time_subtract(laps[laps_count],now);
+		Time* delay=time_subtract(now,laps[laps_count]);
+		free(laps[laps_count]);
 		laps[laps_count]=NULL;
 		time_add(started,delay);
 		for(int i=0;i<laps_count;i++){

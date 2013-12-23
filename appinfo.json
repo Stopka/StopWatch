@@ -52,7 +52,7 @@
                 "file": "fonts/DejaVuSans.ttf"
             },
             {
-                "characterRegex": "[dhms#]",
+                "characterRegex": "[dhmsc#]",
                 "type": "font",
                 "name": "FONT_DEJAVU_SANS_12",
                 "file": "fonts/DejaVuSans.ttf"
