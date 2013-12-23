@@ -21,6 +21,7 @@ static TextLayer* time_display_labels[7];
 char *measure_labels[5] = {"d","h","m","s","cs"};
 //Laps
 static ScrollLayer* laps_display;
+static Layer* laps_display_times;
 static TextLayer* laps_display_laps[STOPWATCH_MAX_LAPS];
 static int laps_display_laps_count=0;
 static InverterLayer* laps_display_mark;
@@ -30,6 +31,7 @@ static ActionBarLayer* action_bar;
 //STATE
 static int measure_offset=2;
 static int measure_offset_laps=2;
+static int selected_lap=0;
 
 static void stopwatch_window_update_measure(){
 	for(int i=0;i<6;i++){
@@ -87,7 +89,7 @@ void stopwatch_window_update_laps(int count){
 		text_layer_set_text_color(laps_display_laps[i],GColorWhite);
 		text_layer_set_text_alignment(laps_display_laps[i], GTextAlignmentCenter);
 		text_layer_set_text	(laps_display_laps[i],string);
-		scroll_layer_add_child(laps_display, (Layer *)laps_display_laps[i]);
+		layer_add_child(laps_display_times, (Layer *)laps_display_laps[i]);
 	}
 	laps_display_laps_count=count;
 	scroll_layer_set_content_size(laps_display,GSize(121,20*(laps_display_laps_count)));
@@ -106,7 +108,7 @@ void stopwatch_window_update_laps(int count){
 
 void stopwatch_window_update_time(){
 	char* string = (char*)text_layer_get_text(time_display_values);
-	Time* time=stopwatch_model_getLapTotalTime(stopwatch_model_getLapsCount()-1);
+	Time* time=stopwatch_model_getLapTotalTime(stopwatch_model_getLapsCount()-selected_lap-1);
 	int vals[]={time->msec/10,time->sec%60,(time->sec/60)%60,(time->sec/(60*60))%24,(time->sec/(60*60*24))%100,(time->sec/(60*60*24*100))};
 	if(vals[5]>0||vals[4]>0){
 			snprintf(string, 9, "%02d,%02d:%02d", vals[4],vals[3],vals[2]);
@@ -135,6 +137,13 @@ static void stopwatch_window_update_running(){
 	action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, gbitmap_create_with_resource(running?ICON_LAP:ICON_RESET));
 	action_bar_layer_set_icon(action_bar, BUTTON_ID_SELECT, gbitmap_create_with_resource(running?ICON_STOP:ICON_START));
 	layer_mark_dirty((Layer *)action_bar);
+}
+
+static void stopwatch_window_update_selected(){
+	layer_set_frame((Layer*)laps_display_mark,GRect(0,20*selected_lap,30,20));
+	stopwatch_window_update_time();
+	//scroll_layer_set_content_size(laps_display,GSize(121,20*(laps_display_laps_count)));
+	scroll_layer_set_content_offset(laps_display,GPoint(0,-20*(selected_lap-1)),true);
 }
 
 static void click_config_provider(void *context);
@@ -189,7 +198,8 @@ static void window_load(Window *window) {
 	///////////////////////////////////////////////////////////////////
 	laps_display=scroll_layer_create(GRect(0,46,121,105));
 	layer_add_child(window_get_root_layer(window), (Layer*)laps_display);
-	
+	laps_display_times=layer_create(GRect(0,0,121,20*STOPWATCH_MAX_LAPS));
+	scroll_layer_add_child(laps_display,(Layer*)laps_display_times);
 	// Laps ////////////////////////////////////////////////////////////
 	stopwatch_window_update_laps(stopwatch_model_getLapsCount());
 	laps_display_mark=inverter_layer_create(GRect(0,0,30,20));
@@ -224,6 +234,7 @@ static void window_unload(Window *window) {
 	//Laps display
 	scroll_layer_destroy(laps_display);
 	stopwatch_window_update_laps(0);
+	layer_destroy(laps_display_times);
 	inverter_layer_destroy(laps_display_mark);	
 
 	//Action bar
@@ -287,11 +298,13 @@ static void handle_select_single_click(ClickRecognizerRef recognizer, void *cont
 }
 
 static void handle_down_single_click(ClickRecognizerRef recognizer, void *context){
-	stopwatch_window_update_time();
+	selected_lap=(selected_lap+1)%stopwatch_model_getLapsCount();
+	stopwatch_window_update_selected();
 }
 
 static void handle_down_long_click(ClickRecognizerRef recognizer, void *context){
-
+	selected_lap=((selected_lap==0)?(stopwatch_model_getLapsCount()-1):(selected_lap-1));
+	stopwatch_window_update_selected();
 }
 
 static void click_config_provider(void *context) {

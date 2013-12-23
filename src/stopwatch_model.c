@@ -79,7 +79,7 @@ int stopwatch_model_getLapsCount(){
 }
 
 int stopwatch_model_getTotalLapsCount(){
-	return laps_count;
+	return total_laps_count;
 }
 
 Time* stopwatch_model_getLapTime(int lap){
