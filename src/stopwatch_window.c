@@ -123,7 +123,7 @@ void stopwatch_window_update_time(){
 		measure_offset_laps=off;
 		stopwatch_window_update_laps(stopwatch_model_getLapsCount());
 	}else{
-		stopwatch_window_update_lap(stopwatch_model_getLapsCount()-1);
+		stopwatch_window_update_lap(0);
 	}
 	stopwatch_window_update_measure();
 	layer_mark_dirty((Layer *)time_display_values);
