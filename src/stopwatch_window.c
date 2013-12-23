@@ -245,18 +245,21 @@ static void stopwatch_window_command_reset(){
 	stopwatch_model_reset();
 	tick_timer_service_unsubscribe();
 	stopwatch_window_update_running();
+	stopwatch_window_update_time();
 	stopwatch_window_update_laps(stopwatch_model_getLapsCount());
 }
 
 static void stopwatch_window_command_start(){
 	stopwatch_model_start();
 	tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
+	stopwatch_window_update_time();
 	stopwatch_window_update_running();
 }
 
 static void stopwatch_window_command_stop(){
 	stopwatch_model_stop();
 	tick_timer_service_unsubscribe();
+	stopwatch_window_update_time();
 	stopwatch_window_update_running();
 }
 
