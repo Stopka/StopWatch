@@ -148,6 +148,10 @@ static void stopwatch_window_update_selected(){
 
 static void click_config_provider(void *context);
 
+static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
+	stopwatch_window_update_time();
+}
+
 static void window_load(Window *window) {
 	///////////////////////////////////////////////////////////////////
 	// Time display
@@ -214,6 +218,11 @@ static void window_load(Window *window) {
 	stopwatch_window_update_running();
   	action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, gbitmap_create_with_resource(ICON_NEXT));
 	action_bar_layer_set_click_config_provider(action_bar,click_config_provider);
+	//INIT
+	stopwatch_window_update_time();
+	if(stopwatch_model_isRunning()){
+		tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
+	}	
 }
 
 static void window_appear(Window *window) {
@@ -239,10 +248,6 @@ static void window_unload(Window *window) {
 
 	//Action bar
 	action_bar_layer_destroy(action_bar);
-}
-
-static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
-	stopwatch_window_update_time();
 }
 ////////////////////////////////////////////////////////////////////
 //Commands

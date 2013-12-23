@@ -6,9 +6,41 @@ int total_laps_count=0;
 bool running=false;
 	
 void stopwatch_model_init(){
-	stopwatch_model_reset();
+	if(!persist_exists(0)){
+		stopwatch_model_reset();
+		return;
+	}
+	running=persist_read_bool(0);
+	persist_delete(0);
+	laps_count=persist_read_int(1);
+	persist_delete(1);
+	total_laps_count=persist_read_int(2);
+	persist_delete(2);
+	if(persist_exists(3)){
+		started=(Time*) malloc(sizeof(Time));
+		persist_read_data(3,started,sizeof(Time));
+		persist_delete(3);
+	}
+	for(int i=0;i<=laps_count;i++){
+		if(persist_exists(4+i)){
+			laps[i]=(Time*) malloc(sizeof(Time));
+			persist_read_data(4+i,laps[i],sizeof(Time));
+			persist_delete(4+i);
+		}
+	}
 }
 void stopwatch_model_deinit(){
+	persist_write_bool(0,running);
+	persist_write_int(1,laps_count);
+	persist_write_int(2,total_laps_count);
+	if(started!=NULL){
+		persist_write_data(3,started,sizeof(Time));
+	}
+	for(int i=0;i<=laps_count;i++){
+		if(laps[i]!=NULL){
+			persist_write_data(4+i,laps[i],sizeof(Time));
+		}
+	}
 	stopwatch_model_reset();
 }
 
