@@ -30,13 +30,18 @@ void stopwatch_model_init(){
 	}
 }
 void stopwatch_model_deinit(){
+	persist_delete(0);
 	persist_write_bool(0,running);
+	persist_delete(1);
 	persist_write_int(1,laps_count);
+	persist_delete(2);
 	persist_write_int(2,total_laps_count);
 	if(started!=NULL){
+		persist_delete(3);
 		persist_write_data(3,started,sizeof(Time));
 	}
 	for(int i=0;i<=laps_count;i++){
+		persist_delete(4+i);
 		if(laps[i]!=NULL){
 			persist_write_data(4+i,laps[i],sizeof(Time));
 		}

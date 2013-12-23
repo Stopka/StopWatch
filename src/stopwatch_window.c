@@ -234,6 +234,7 @@ static void window_disappear(Window *window) {
 }
 
 static void window_unload(Window *window) {
+	tick_timer_service_unsubscribe();
 	//Time display
 	layer_destroy(time_display);
 	text_layer_destroy	(time_display_values);
