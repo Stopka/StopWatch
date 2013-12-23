@@ -1,5 +1,5 @@
 {
-    "versionLabel": "1.0",
+    "versionLabel": "BETA 1",
     "uuid": "26e94ec2-9f28-4fde-8cdc-0222902b2ebb",
     "appKeys": {},
     "longName": "Stopka's StopWatch",
@@ -14,6 +14,12 @@
     },
     "resources": {
         "media": [
+            {
+                "menuIcon": true,
+                "type": "png",
+                "name": "LOGO",
+                "file": "images/stopwatch.png"
+            },
             {
                 "type": "png",
                 "name": "ICON_DOWN",
@@ -38,12 +44,6 @@
                 "type": "png",
                 "name": "ICON_RESET",
                 "file": "images/reset.png"
-            },
-            {
-                "menuIcon": true,
-                "type": "png",
-                "name": "LOGO",
-                "file": "images/stopwatch.png"
             },
             {
                 "characterRegex": "[:0-9., ]",
