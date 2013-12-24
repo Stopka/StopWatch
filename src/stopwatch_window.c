@@ -14,6 +14,7 @@
 #define IMG_MARK RESOURCE_ID_IMG_MARK
 //window
 static Window* stopwatch_window;
+static PropertyAnimation *animation[STOPWATCH_MAX_LAPS+1];
 //Time display
 static Layer *time_display;
 static TextLayer* time_display_values;
@@ -74,14 +75,14 @@ void stopwatch_window_update_lap(int index){
 }
 
 void stopwatch_window_update_laps(int count){
-	for(int i=laps_display_laps_count-1;i>=count;i--){
+	for(int i=laps_display_laps_count-1;i>=count;i--){//odstranit přebytečné
 		char* string = (char*)text_layer_get_text(laps_display_laps[i]);
 		layer_remove_from_parent((Layer *) laps_display_laps[i]);	
 		text_layer_destroy(laps_display_laps[i]);
 		free(string);
 	}
 	GFont font=fonts_load_custom_font(resource_get_handle(FONT_LAPS_DISPLAY_LAP));
-	for(int i=laps_display_laps_count;i<count;i++){
+	for(int i=laps_display_laps_count;i<count;i++){//vytvořit chybějící
 		char* string = (char *)malloc(12*sizeof(char));
 		laps_display_laps[i]=text_layer_create(GRect(0, 20*i, 121, 20));
 		text_layer_set_font(laps_display_laps[i],font);
@@ -94,14 +95,14 @@ void stopwatch_window_update_laps(int count){
 	laps_display_laps_count=count;
 	scroll_layer_set_content_size(laps_display,GSize(121,20*(laps_display_laps_count)));
 	measure_offset_laps=2;
-	for(int i=0;i<laps_display_laps_count;i++){
+	for(int i=0;i<laps_display_laps_count;i++){//zjistit jednotky
 		int off=stopwatch_window_lap_offset(i);
 		if(off<measure_offset_laps){
 			measure_offset_laps=off;
 		}
 	}
 	stopwatch_window_update_measure();
-	for(int i=0;i<laps_display_laps_count;i++){
+	for(int i=0;i<laps_display_laps_count;i++){//nastavit text
 		stopwatch_window_update_lap(i);
 	}
 }
@@ -139,10 +140,21 @@ static void stopwatch_window_update_running(){
 	layer_mark_dirty((Layer *)action_bar);
 }
 
+void selected_animation_stopped(Animation *anim, bool finished, void *data) {
+   	property_animation_destroy(animation[STOPWATCH_MAX_LAPS]);
+	animation[STOPWATCH_MAX_LAPS]=NULL;
+}
+
 static void stopwatch_window_update_selected(){
-	layer_set_frame((Layer*)laps_display_mark,GRect(0,20*selected_lap,30,20));
+	//layer_set_frame((Layer*)laps_display_mark,GRect(0,20*selected_lap,30,20));
+	GRect from_frame = layer_get_frame((Layer*)laps_display_mark);
+	GRect to_frame = GRect(0,20*selected_lap,30,20);
+	animation[STOPWATCH_MAX_LAPS]=property_animation_create_layer_frame((Layer*)laps_display_mark,&from_frame,&to_frame);
+	animation_set_handlers((Animation*) animation[STOPWATCH_MAX_LAPS], (AnimationHandlers) {
+        .stopped = (AnimationStoppedHandler) selected_animation_stopped,
+      }, NULL);
+	animation_schedule((Animation*) animation[STOPWATCH_MAX_LAPS]);
 	stopwatch_window_update_time();
-	//scroll_layer_set_content_size(laps_display,GSize(121,20*(laps_display_laps_count)));
 	scroll_layer_set_content_offset(laps_display,GPoint(0,-20*(selected_lap-1)),true);
 }
 
