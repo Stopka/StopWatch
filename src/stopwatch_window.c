@@ -156,11 +156,11 @@ static void window_load(Window *window) {
 	///////////////////////////////////////////////////////////////////
 	// Time display
 	///////////////////////////////////////////////////////////////////
-	time_display=layer_create(GRect(0, 0, 144, 46));
+	time_display=layer_create(GRect(0, 0, 144, 50));
 	layer_add_child(window_get_root_layer(window), (Layer*)time_display);
 	
 	// Values ////////////////////////////////////////////////////////////
-	time_display_values=text_layer_create(GRect(0, 6, 122, 40));
+	time_display_values=text_layer_create(GRect(0, 8, 122, 40));
 	GFont font = fonts_load_custom_font(resource_get_handle(FONT_TIME_DISPLAY));
 	text_layer_set_font(time_display_values,font);
 	text_layer_set_background_color	(time_display_values,GColorClear);
@@ -175,10 +175,10 @@ static void window_load(Window *window) {
 	time_display_labels[1]=text_layer_create(GRect(40, 0, 41, 14));
 	time_display_labels[2]=text_layer_create(GRect(81, 0, 41, 14));
 	
-	time_display_labels[6]=text_layer_create(GRect(0, 32, 32, 14));
-	time_display_labels[3]=text_layer_create(GRect(32, 32, 30, 14));
-	time_display_labels[4]=text_layer_create(GRect(62, 32, 30, 14));
-	time_display_labels[5]=text_layer_create(GRect(92, 32, 30, 14));
+	time_display_labels[6]=text_layer_create(GRect(0, 36, 32, 14));
+	time_display_labels[3]=text_layer_create(GRect(32, 36, 30, 14));
+	time_display_labels[4]=text_layer_create(GRect(62, 36, 30, 14));
+	time_display_labels[5]=text_layer_create(GRect(92, 36, 30, 14));
 	font = fonts_load_custom_font(resource_get_handle(FONT_TIME_DISPLAY_LABEL));
 	for(int i=0;i<6;i++){
 		text_layer_set_font(time_display_labels[i],font);
@@ -200,7 +200,7 @@ static void window_load(Window *window) {
 	///////////////////////////////////////////////////////////////////
 	// Laps display
 	///////////////////////////////////////////////////////////////////
-	laps_display=scroll_layer_create(GRect(0,46,121,105));
+	laps_display=scroll_layer_create(GRect(0,50,121,100));
 	layer_add_child(window_get_root_layer(window), (Layer*)laps_display);
 	laps_display_times=layer_create(GRect(0,0,121,20*STOPWATCH_MAX_LAPS));
 	scroll_layer_add_child(laps_display,(Layer*)laps_display_times);
@@ -264,8 +264,10 @@ static void stopwatch_window_command_newLap(){
 static void stopwatch_window_command_reset(){
 	stopwatch_model_reset();
 	tick_timer_service_unsubscribe();
+	selected_lap=0;
+	stopwatch_window_update_selected();
 	stopwatch_window_update_running();
-	stopwatch_window_update_time();
+	//stopwatch_window_update_time(); //volá se při update selected
 	stopwatch_window_update_laps(stopwatch_model_getLapsCount());
 }
 
