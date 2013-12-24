@@ -1,6 +1,6 @@
 #include "stopwatch_model.h"
 	
-#define STOPWATCH_MAX_PERSIST 3
+#define STOPWATCH_MAX_PERSIST 30
 	
 Time* started=NULL;
 Time* laps[STOPWATCH_MAX_LAPS+1];
@@ -32,16 +32,14 @@ void stopwatch_model_deinit(){
 		int plaps=laps_count>STOPWATCH_MAX_PERSIST?STOPWATCH_MAX_PERSIST:laps_count;
         persist_write_int(1,plaps);
         persist_write_int(2,total_laps_count);
+		persist_delete(3);
 		if(started!=NULL){
                 persist_write_data(3,started,sizeof(Time));
-		}else{
-			persist_delete(3);
 		}
         for(int i=0;i<=plaps;i++){
+				persist_delete(4+i);
                 if(laps[laps_count-plaps+i]!=NULL){
                         persist_write_data(4+i,laps[laps_count-plaps+i],sizeof(Time));
-				}else{
-					persist_delete(4+i);
 				}
         }
         stopwatch_model_reset();

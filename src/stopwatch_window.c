@@ -226,11 +226,14 @@ static void window_load(Window *window) {
 }
 
 static void window_appear(Window *window) {
-	
+	stopwatch_window_update_time();
+	if(stopwatch_model_isRunning()){
+		tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
+	}
 }
 
 static void window_disappear(Window *window) {
-	
+	tick_timer_service_unsubscribe();
 }
 
 static void window_unload(Window *window) {
