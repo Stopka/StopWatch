@@ -14,7 +14,7 @@
 #define IMG_MARK RESOURCE_ID_IMG_MARK
 //window
 static Window* stopwatch_window;
-static PropertyAnimation *animation[STOPWATCH_MAX_LAPS+1];
+static PropertyAnimation *animation[STOPWATCH_MAX_LAPS+1+5];
 //Time display
 static Layer *time_display;
 static TextLayer* time_display_values;
@@ -23,7 +23,7 @@ char *measure_labels[5] = {"d","h","m","s","cs"};
 //Laps
 static ScrollLayer* laps_display;
 static Layer* laps_display_times;
-static TextLayer* laps_display_laps[STOPWATCH_MAX_LAPS];
+static TextLayer* laps_display_laps[STOPWATCH_MAX_LAPS+1+5];
 static int laps_display_laps_count=0;
 static InverterLayer* laps_display_mark;
 //Action bar
@@ -102,6 +102,26 @@ void destroy_animation_stopped(Animation *anim, bool finished, void *data) {
 }
 
 void stopwatch_window_update_laps(int count,bool animate){
+	if(animate&&laps_display_laps_count==count&&laps_display_laps_count==STOPWATCH_MAX_LAPS){//odeber poslední řádek
+		GRect from_frame = layer_get_frame((Layer*)laps_display_laps[STOPWATCH_MAX_LAPS-1]);
+		GRect to_frame = GRect(130, 20*(STOPWATCH_MAX_LAPS-1), 121, 20);
+		for(int i=STOPWATCH_MAX_LAPS+1;i<STOPWATCH_MAX_LAPS+1+5;i++){
+			if(animation[i]!=NULL){
+				continue;
+			}
+			animation[i]=property_animation_create_layer_frame((Layer*)laps_display_laps[STOPWATCH_MAX_LAPS-1],&from_frame,&to_frame);
+			laps_display_laps[i]=laps_display_laps[STOPWATCH_MAX_LAPS-1];
+			laps_display_laps[STOPWATCH_MAX_LAPS-1]=NULL;
+			int* data=malloc(sizeof(int));
+			*data=i;
+			animation_set_handlers((Animation*) animation[i], (AnimationHandlers) {
+				.stopped = (AnimationStoppedHandler) destroy_animation_stopped,
+			  }, data);
+			animation_schedule((Animation*) animation[i]);	
+			laps_display_laps_count--;
+			break;
+		}
+	}
 	for(int i=laps_display_laps_count-1;i>=count;i--){//odstranit přebytečné
 		int* data=malloc(sizeof(int));
 		*data=i;
@@ -179,7 +199,7 @@ void stopwatch_window_update_time(){
 	int off=stopwatch_window_lap_offset(stopwatch_model_getLapsCount()-1);
 	if(off<measure_offset_laps){
 		measure_offset_laps=off;
-		stopwatch_window_update_laps(stopwatch_model_getLapsCount(),true);
+		stopwatch_window_update_laps(stopwatch_model_getLapsCount(),false);
 	}else{
 		stopwatch_window_update_lap(0);
 	}
