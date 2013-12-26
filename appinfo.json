@@ -1,9 +1,9 @@
 {
-    "versionLabel": "0.3",
+    "versionLabel": "0.4",
     "uuid": "26e94ec2-9f28-4fde-8cdc-0222902b2ebb",
     "appKeys": {},
     "longName": "Stopka's StopWatch",
-    "versionCode": 3,
+    "versionCode": 4,
     "capabilities": [
         ""
     ],
