@@ -119,7 +119,7 @@ void stopwatch_window_update_laps(int count,bool animate){
 		animation_schedule((Animation*) animation[i]);
 	}
 	GFont font=fonts_load_custom_font(resource_get_handle(FONT_LAPS_DISPLAY_LAP));
-	/*for(int i=count-1;i-(count-laps_display_laps_count)>=0;i--){//posunout existující
+	for(int i=count-1;i-(count-laps_display_laps_count)>=0&&count>laps_display_laps_count;i--){//posunout existující
 		laps_display_laps[i]=laps_display_laps[i-(count-laps_display_laps_count)];
 		if(!animate){
 			layer_set_frame((Layer*)laps_display_laps[i],GRect(0, 20*i, 121, 20));
@@ -145,16 +145,6 @@ void stopwatch_window_update_laps(int count,bool animate){
 		text_layer_set_text_color(laps_display_laps[i],GColorWhite);
 		text_layer_set_text_alignment(laps_display_laps[i], GTextAlignmentCenter);
 		text_layer_set_text	(laps_display_laps[i],string);
-		layer_add_child(laps_display_times, (Layer *)laps_display_laps[i]);
-	}*/
-	for(int i=laps_display_laps_count;i<count;i++){//vytvořit chybějící
-		char* string = (char *)malloc(12*sizeof(char));
-		laps_display_laps[i]=text_layer_create(GRect(0, 20*i, 121, 20));
-		text_layer_set_font(laps_display_laps[i],font);
-		text_layer_set_background_color        (laps_display_laps[i],GColorClear);
-		text_layer_set_text_color(laps_display_laps[i],GColorWhite);
-		text_layer_set_text_alignment(laps_display_laps[i], GTextAlignmentCenter);
-		text_layer_set_text        (laps_display_laps[i],string);
 		layer_add_child(laps_display_times, (Layer *)laps_display_laps[i]);
 	}
 	laps_display_laps_count=count;
