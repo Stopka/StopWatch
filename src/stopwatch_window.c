@@ -28,6 +28,7 @@ static int laps_display_laps_count=0;
 static InverterLayer* laps_display_mark;
 //Action bar
 static ActionBarLayer* action_bar;	
+static GBitmap* bitmaps[5];
 
 //STATE
 static int measure_offset=2;
@@ -210,8 +211,8 @@ void stopwatch_window_update_time(){
 
 static void stopwatch_window_update_running(){
 	bool running=stopwatch_model_isRunning();
-	action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, gbitmap_create_with_resource(running?ICON_LAP:ICON_RESET));
-	action_bar_layer_set_icon(action_bar, BUTTON_ID_SELECT, gbitmap_create_with_resource(running?ICON_STOP:ICON_START));
+	action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, bitmaps[running?1:0]);
+	action_bar_layer_set_icon(action_bar, BUTTON_ID_SELECT, bitmaps[running?3:2]);
 	layer_mark_dirty((Layer *)action_bar);
 }
 
@@ -299,8 +300,13 @@ static void window_load(Window *window) {
 	action_bar = action_bar_layer_create();
 	action_bar_layer_add_to_window(action_bar, window);
 	action_bar_layer_set_background_color(action_bar, GColorWhite);
+	bitmaps[0]=gbitmap_create_with_resource(ICON_RESET);
+	bitmaps[1]=gbitmap_create_with_resource(ICON_LAP);
+	bitmaps[2]=gbitmap_create_with_resource(ICON_START);
+	bitmaps[3]=gbitmap_create_with_resource(ICON_STOP);
+	bitmaps[4]=gbitmap_create_with_resource(ICON_NEXT);
 	stopwatch_window_update_running();
-  	action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, gbitmap_create_with_resource(ICON_NEXT));
+  	action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, bitmaps[4]);
 	action_bar_layer_set_click_config_provider(action_bar,click_config_provider);
 	//INIT
 	stopwatch_window_update_time();
@@ -336,6 +342,10 @@ static void window_unload(Window *window) {
 
 	//Action bar
 	action_bar_layer_destroy(action_bar);
+	for(int i=0;i<5;i++){
+		gbitmap_destroy(bitmaps[i]);
+	}
+
 }
 ////////////////////////////////////////////////////////////////////
 //Commands
