@@ -70,7 +70,7 @@ void stopwatch_window_update_lap(int index){
 			snprintf(string, 12, "%02d %02d:%02d:%02d", (shift)%100,vals[3],vals[2],vals[1]);
 			break;
 		default:
-			snprintf(string, 12, "%02d %02d:%02d.%02d", (shift)%100,vals[2],vals[1],vals[0]);
+			snprintf(string, 12, "%02d %02d:%02d.%02d", (shift)%100,vals[2],vals[1],stopwatch_model_isRunning()&&index==0?0:vals[0]);
 			break;
 	}
 	layer_mark_dirty((Layer *)laps_display_laps[index]);
@@ -193,7 +193,7 @@ void stopwatch_window_update_time(){
 			snprintf(string, 9, "%02d:%02d:%02d", vals[3],vals[2],vals[1]);
 			measure_offset=1;
 	}else{
-			snprintf(string, 9, "%02d:%02d.%02d", vals[2],vals[1],vals[0]);
+			snprintf(string, 9, "%02d:%02d.%02d", vals[2],vals[1],stopwatch_model_isRunning()&&selected_lap==0?0:vals[0]);
 			measure_offset=2;
 	}
 	int off=stopwatch_window_lap_offset(stopwatch_model_getLapsCount()-1);
