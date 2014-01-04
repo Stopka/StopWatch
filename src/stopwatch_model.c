@@ -1,6 +1,6 @@
 #include "stopwatch_model.h"
 	
-#define STOPWATCH_MAX_PERSIST 30
+#define STOPWATCH_MAX_PERSIST 3
 	
 Time* started=NULL;
 Time* laps[STOPWATCH_MAX_LAPS+1];
@@ -9,7 +9,7 @@ int total_laps_count=0;
 bool running=false;
         
 void stopwatch_model_init(){
-        if(!persist_exists(0)){
+        if(!persist_exists(0)||!persist_exists(1)||!persist_exists(2)||!persist_exists(3)){
                 stopwatch_model_reset();
                 return;
         }
@@ -24,22 +24,37 @@ void stopwatch_model_init(){
                 if(persist_exists(4+i)){
                         laps[i]=(Time*) malloc(sizeof(Time));
                         persist_read_data(4+i,laps[i],sizeof(Time));
-                }
+				}else{
+					laps_count=i;
+					break;
+				}
         }
 }
 void stopwatch_model_deinit(){
-        persist_write_bool(0,running);
+		int write_result;
+        write_result=persist_write_bool(0,running);
+		app_log(APP_LOG_LEVEL_INFO,"model",32,"write: %i",write_result);
+		app_log(APP_LOG_LEVEL_INFO,"model",32,"running: %i",(int)persist_exists(0));
 		int plaps=laps_count>STOPWATCH_MAX_PERSIST?STOPWATCH_MAX_PERSIST:laps_count;
-        persist_write_int(1,plaps);
-        persist_write_int(2,total_laps_count);
-		persist_delete(3);
+        write_result=persist_write_int(1,plaps);
+		app_log(APP_LOG_LEVEL_INFO,"model",32,"write: %i",write_result);
+		app_log(APP_LOG_LEVEL_INFO,"model",32,"laps: %i",(int)persist_exists(1));
+        write_result=persist_write_int(2,total_laps_count);
+		app_log(APP_LOG_LEVEL_INFO,"model",32,"write: %i",write_result);
+		app_log(APP_LOG_LEVEL_INFO,"model",32,"total laps: %i",(int)persist_exists(2));
+		write_result=persist_delete(3);
 		if(started!=NULL){
-                persist_write_data(3,started,sizeof(Time));
+                write_result=persist_write_data(3,started,sizeof(Time));
+				app_log(APP_LOG_LEVEL_INFO,"model",32,"write: %i",write_result);
+				app_log(APP_LOG_LEVEL_INFO,"model",32,"started: %i",(int)persist_exists(3));
 		}
         for(int i=0;i<=plaps;i++){
-				persist_delete(4+i);
+				write_result=persist_delete(4+i);
+				app_log(APP_LOG_LEVEL_INFO,"model",53,"delete: %i",write_result);
                 if(laps[laps_count-plaps+i]!=NULL){
-                        persist_write_data(4+i,laps[laps_count-plaps+i],sizeof(Time));
+                        write_result=persist_write_data(4+i,laps[laps_count-plaps+i],sizeof(Time));
+						app_log(APP_LOG_LEVEL_INFO,"model",32,"write: %i",write_result);
+						app_log(APP_LOG_LEVEL_INFO,"model",32,"lap[%i]: %i",i,(int)persist_exists(4+i));
 				}
         }
         stopwatch_model_reset();

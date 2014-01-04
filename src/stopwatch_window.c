@@ -1,6 +1,8 @@
 #include "stopwatch_window.h"
 #include "stopwatch_model.h"
 #include <string.h>
+
+#define RUNNING_REFRESH true
 	
 #define FONT_TIME_DISPLAY RESOURCE_ID_FONT_DEJAVU_SANS_BOLD_25
 #define FONT_TIME_DISPLAY_LABEL RESOURCE_ID_FONT_DEJAVU_SANS_12
@@ -104,13 +106,12 @@ void destroy_animation_stopped(Animation *anim, bool finished, void *data) {
 
 void stopwatch_window_update_laps(int count,bool animate){
 	if(animate&&laps_display_laps_count==count&&laps_display_laps_count==STOPWATCH_MAX_LAPS){//odeber poslední řádek
-		GRect from_frame = layer_get_frame((Layer*)laps_display_laps[STOPWATCH_MAX_LAPS-1]);
 		GRect to_frame = GRect(130, 20*(STOPWATCH_MAX_LAPS-1), 121, 20);
 		for(int i=STOPWATCH_MAX_LAPS+1;i<STOPWATCH_MAX_LAPS+1+5;i++){
 			if(animation[i]!=NULL){
 				continue;
 			}
-			animation[i]=property_animation_create_layer_frame((Layer*)laps_display_laps[STOPWATCH_MAX_LAPS-1],&from_frame,&to_frame);
+			animation[i]=property_animation_create_layer_frame((Layer*)laps_display_laps[STOPWATCH_MAX_LAPS-1],NULL,&to_frame);
 			laps_display_laps[i]=laps_display_laps[STOPWATCH_MAX_LAPS-1];
 			laps_display_laps[STOPWATCH_MAX_LAPS-1]=NULL;
 			int* data=malloc(sizeof(int));
@@ -131,9 +132,8 @@ void stopwatch_window_update_laps(int count,bool animate){
 			continue;
 		}
 		checkAnimation(i);
-		GRect from_frame = layer_get_frame((Layer*)laps_display_laps[i]);
 		GRect to_frame = GRect(130, 20*i, 121, 20);
-		animation[i]=property_animation_create_layer_frame((Layer*)laps_display_laps[i],&from_frame,&to_frame);
+		animation[i]=property_animation_create_layer_frame((Layer*)laps_display_laps[i],NULL,&to_frame);
 		animation_set_handlers((Animation*) animation[i], (AnimationHandlers) {
 			.stopped = (AnimationStoppedHandler) destroy_animation_stopped,
 		  }, data);
@@ -148,9 +148,8 @@ void stopwatch_window_update_laps(int count,bool animate){
 			checkAnimation(i);
 			int* data=malloc(sizeof(int));
 			*data=i;
-			GRect from_frame = layer_get_frame((Layer*)laps_display_laps[i]);
 			GRect to_frame = GRect(0, 20*i, 121, 20);
-			animation[i]=property_animation_create_layer_frame((Layer*)laps_display_laps[i],&from_frame,&to_frame);
+			animation[i]=property_animation_create_layer_frame((Layer*)laps_display_laps[i],NULL,&to_frame);
 			animation_set_handlers((Animation*) animation[i], (AnimationHandlers) {
 				.stopped = (AnimationStoppedHandler) general_animation_stopped,
 			  }, data);
