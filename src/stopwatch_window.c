@@ -31,6 +31,7 @@ static InverterLayer* laps_display_mark;
 //Action bar
 static ActionBarLayer* action_bar;	
 static GBitmap* bitmaps[5];
+static GFont font[3];
 
 //STATE
 static int measure_offset=2;
@@ -139,7 +140,6 @@ void stopwatch_window_update_laps(int count,bool animate){
 		  }, data);
 		animation_schedule((Animation*) animation[i]);
 	}
-	GFont font=fonts_load_custom_font(resource_get_handle(FONT_LAPS_DISPLAY_LAP));
 	for(int i=count-1;i-(count-laps_display_laps_count)>=0&&count>laps_display_laps_count;i--){//posunout existující
 		laps_display_laps[i]=laps_display_laps[i-(count-laps_display_laps_count)];
 		if(!animate){
@@ -160,7 +160,7 @@ void stopwatch_window_update_laps(int count,bool animate){
 	for(int i=0;i<count-laps_display_laps_count;i++){//vytvořit chybějící
 		char* string = (char *)malloc(12*sizeof(char));
 		laps_display_laps[i]=text_layer_create(GRect(0, 20*i, 121, 20));
-		text_layer_set_font(laps_display_laps[i],font);
+		text_layer_set_font(laps_display_laps[i],font[2]);
 		text_layer_set_background_color	(laps_display_laps[i],GColorClear);
 		text_layer_set_text_color(laps_display_laps[i],GColorWhite);
 		text_layer_set_text_alignment(laps_display_laps[i], GTextAlignmentCenter);
@@ -219,9 +219,8 @@ static void stopwatch_window_update_selected(){
 	//layer_set_frame((Layer*)laps_display_mark,GRect(0,20*selected_lap,30,20));
 	int* data=malloc(sizeof(int));
 	*data=STOPWATCH_MAX_LAPS;
-	GRect from_frame = layer_get_frame((Layer*)laps_display_mark);
 	GRect to_frame = GRect(0,20*selected_lap,30,20);
-	animation[STOPWATCH_MAX_LAPS]=property_animation_create_layer_frame((Layer*)laps_display_mark,&from_frame,&to_frame);
+	animation[STOPWATCH_MAX_LAPS]=property_animation_create_layer_frame((Layer*)laps_display_mark,NULL,&to_frame);
 	animation_set_handlers((Animation*) animation[STOPWATCH_MAX_LAPS], (AnimationHandlers) {
         .stopped = (AnimationStoppedHandler) general_animation_stopped,
       }, data);
@@ -237,6 +236,11 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 static void window_load(Window *window) {
+	app_log(APP_LOG_LEVEL_INFO,"window",238,"window_load()");
+	// fonts //////////////////ú
+	font[0]=fonts_load_custom_font(resource_get_handle(FONT_TIME_DISPLAY));
+	font[1]=fonts_load_custom_font(resource_get_handle(FONT_TIME_DISPLAY_LABEL));
+	font[2]=fonts_load_custom_font(resource_get_handle(FONT_LAPS_DISPLAY_LAP));
 	///////////////////////////////////////////////////////////////////
 	// Time display
 	///////////////////////////////////////////////////////////////////
@@ -245,8 +249,7 @@ static void window_load(Window *window) {
 	
 	// Values ////////////////////////////////////////////////////////////
 	time_display_values=text_layer_create(GRect(0, 8, 122, 40));
-	GFont font = fonts_load_custom_font(resource_get_handle(FONT_TIME_DISPLAY));
-	text_layer_set_font(time_display_values,font);
+	text_layer_set_font(time_display_values,font[0]);
 	text_layer_set_background_color	(time_display_values,GColorClear);
 	text_layer_set_text_color(time_display_values,GColorWhite);
 	text_layer_set_text_alignment(time_display_values, GTextAlignmentCenter);
@@ -263,9 +266,8 @@ static void window_load(Window *window) {
 	time_display_labels[3]=text_layer_create(GRect(32, 36, 30, 14));
 	time_display_labels[4]=text_layer_create(GRect(62, 36, 30, 14));
 	time_display_labels[5]=text_layer_create(GRect(92, 36, 30, 14));
-	font = fonts_load_custom_font(resource_get_handle(FONT_TIME_DISPLAY_LABEL));
 	for(int i=0;i<6;i++){
-		text_layer_set_font(time_display_labels[i],font);
+		text_layer_set_font(time_display_labels[i],font[1]);
 		text_layer_set_background_color	(time_display_labels[i],(i<3?GColorClear:GColorWhite));
 		text_layer_set_text_color(time_display_labels[i],(i<3?GColorWhite:GColorBlack));
 		text_layer_set_text_alignment(time_display_labels[i], GTextAlignmentCenter);
@@ -273,7 +275,7 @@ static void window_load(Window *window) {
 		layer_add_child((Layer *)time_display, (Layer *)time_display_labels[i]);
 	}
 	stopwatch_window_update_measure();
-	text_layer_set_font(time_display_labels[6],font);
+	text_layer_set_font(time_display_labels[6],font[1]);
 	text_layer_set_background_color	(time_display_labels[6],GColorWhite);
 	text_layer_set_text_color(time_display_labels[6],GColorBlack);
 	text_layer_set_text_alignment(time_display_labels[6], GTextAlignmentCenter);
@@ -308,13 +310,15 @@ static void window_load(Window *window) {
   	action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, bitmaps[4]);
 	action_bar_layer_set_click_config_provider(action_bar,click_config_provider);
 	//INIT
+	/* volá se v window_appear()
 	stopwatch_window_update_time();
 	if(stopwatch_model_isRunning()){
 		tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
-	}	
+	}*/
 }
 
 static void window_appear(Window *window) {
+	app_log(APP_LOG_LEVEL_INFO,"window",320,"window_appear()");
 	stopwatch_window_update_time();
 	if(stopwatch_model_isRunning()){
 		tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
@@ -322,10 +326,12 @@ static void window_appear(Window *window) {
 }
 
 static void window_disappear(Window *window) {
+	app_log(APP_LOG_LEVEL_INFO,"window",328,"window_disappear()");
 	tick_timer_service_unsubscribe();
 }
 
 static void window_unload(Window *window) {
+	app_log(APP_LOG_LEVEL_INFO,"window",332,"window_unload()");
 	tick_timer_service_unsubscribe();
 	//Time display
 	layer_destroy(time_display);
@@ -344,7 +350,10 @@ static void window_unload(Window *window) {
 	for(int i=0;i<5;i++){
 		gbitmap_destroy(bitmaps[i]);
 	}
-
+	
+	for(int i=0;i<3;i++){
+		fonts_unload_custom_font(font[i])	;
+	}
 }
 ////////////////////////////////////////////////////////////////////
 //Commands
@@ -425,6 +434,7 @@ static void click_config_provider(void *context) {
 //Public intarface
 ////////////////////////////////////////////////////////////////////
 void stopwatch_window_init(){
+	app_log(APP_LOG_LEVEL_INFO,"window",436,"window_init()");
 	stopwatch_window = window_create();
 	window_set_background_color	(stopwatch_window,GColorBlack);	
 	window_set_window_handlers(stopwatch_window, (WindowHandlers) {
@@ -437,6 +447,7 @@ void stopwatch_window_init(){
 }
 
 void stopwatch_window_deinit(){
+	app_log(APP_LOG_LEVEL_INFO,"window",449,"window_deinit()");
 	window_stack_pop(true);
 	window_destroy(stopwatch_window);
 }
