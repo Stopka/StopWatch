@@ -9,61 +9,57 @@ int total_laps_count=0;
 bool running=false;
         
 void stopwatch_model_init(){
-        if(!persist_exists(0)||!persist_exists(1)||!persist_exists(2)||!persist_exists(3)){
-				app_log(APP_LOG_LEVEL_WARNING,"model init",13,"missing persist data: %i %i %i %i",persist_exists(0),persist_exists(1),persist_exists(2),persist_exists(3));
+		APP_LOG(APP_LOG_LEVEL_INFO,"model_init()");
+        if(!persist_exists(0)||!persist_exists(1)||!persist_exists(2)){
+				APP_LOG(APP_LOG_LEVEL_WARNING,"missing persist data: %i %i %i %i",persist_exists(0),persist_exists(1),persist_exists(2),persist_exists(3));
                 stopwatch_model_reset();
                 return;
         }
         running=persist_read_bool(0);
-		app_log(APP_LOG_LEVEL_INFO,"model init",18,"running: %i",(int)running);
+		APP_LOG(APP_LOG_LEVEL_INFO,"running: %i",(int)running);
         laps_count=persist_read_int(1);
-        app_log(APP_LOG_LEVEL_INFO,"model init",20,"laps_c: %i",laps_count);
+        APP_LOG(APP_LOG_LEVEL_INFO,"laps_count: %i",laps_count);
 		total_laps_count=persist_read_int(2);
-		app_log(APP_LOG_LEVEL_INFO,"model init",22,"t_laps_c: %i",total_laps_count);
+		APP_LOG(APP_LOG_LEVEL_INFO,"total_laps_count: %i",total_laps_count);
         started=(Time*) malloc(sizeof(Time));
         persist_read_data(3,started,sizeof(Time));
-		app_log(APP_LOG_LEVEL_INFO,"model init",28,"started: object");
+		APP_LOG(APP_LOG_LEVEL_INFO,"started: object");
         for(int i=0;i<=laps_count;i++){
                 if(persist_exists(4+i)){
-                        laps[i]=(Time*) malloc(sizeof(Time));
-                        persist_read_data(4+i,laps[i],sizeof(Time));
-						app_log(APP_LOG_LEVEL_INFO,"model init",35,"laps[%i]: object",i);
+                	laps[i]=(Time*) malloc(sizeof(Time));
+                    persist_read_data(4+i,laps[i],sizeof(Time));
+					APP_LOG(APP_LOG_LEVEL_INFO,"laps[%i]: object",i);
 				}else{
-					app_log(APP_LOG_LEVEL_INFO,"model init",38,"laps[%i]: NULL",i);
+					APP_LOG(APP_LOG_LEVEL_INFO,"laps[%i]: NULL",i);
 					laps[i]=NULL;
-					if(i!=0&&laps[i-1]==NULL){
-						laps_count=i;
-						app_log(APP_LOG_LEVEL_WARNING,"model init",39,"laps_c: %i",laps_count);
-						break;
-					}
+					laps_count=i==0?1:i;
+					APP_LOG(APP_LOG_LEVEL_WARNING,"laps_count: %i",laps_count);
+					break;
 				}
         }
 }
 void stopwatch_model_deinit(){
+		APP_LOG(APP_LOG_LEVEL_INFO,"model_deinit()");
 		int write_result;
         write_result=persist_write_bool(0,running);
-		app_log(APP_LOG_LEVEL_INFO,"model deinit",36,"write: %i",write_result);
-		app_log(APP_LOG_LEVEL_INFO,"model deinit",37,"running: %i",(int)persist_exists(0));
+		APP_LOG((write_result<0?APP_LOG_LEVEL_WARNING:APP_LOG_LEVEL_INFO),"write(%i) running(%i): %i",0,(int)running,write_result);
 		int plaps=laps_count>STOPWATCH_MAX_PERSIST?STOPWATCH_MAX_PERSIST:laps_count;
         write_result=persist_write_int(1,plaps);
-		app_log(APP_LOG_LEVEL_INFO,"model deinit",41,"write: %i",write_result);
-		app_log(APP_LOG_LEVEL_INFO,"model deinit",42,"laps: %i",(int)persist_exists(1));
+		APP_LOG((write_result<0?APP_LOG_LEVEL_WARNING:APP_LOG_LEVEL_INFO),"write(%i) plaps(%i): %i",1,plaps,write_result);
         write_result=persist_write_int(2,total_laps_count);
-		app_log(APP_LOG_LEVEL_INFO,"model deinit",44,"write: %i",write_result);
-		app_log(APP_LOG_LEVEL_INFO,"model deinit",45,"total laps: %i",(int)persist_exists(2));
+		APP_LOG((write_result<0?APP_LOG_LEVEL_WARNING:APP_LOG_LEVEL_INFO),"write(%i) total_laps_count(%i): %i",2,total_laps_count,write_result);
 		write_result=persist_delete(3);
+		APP_LOG((write_result<0?APP_LOG_LEVEL_WARNING:APP_LOG_LEVEL_INFO),"delete(%i) started: %i",3,write_result);
 		if(started!=NULL){
                 write_result=persist_write_data(3,started,sizeof(Time));
-				app_log(APP_LOG_LEVEL_INFO,"model deinit",49,"write: %i",write_result);
-				app_log(APP_LOG_LEVEL_INFO,"model deinit",50,"started: %i",(int)persist_exists(3));
+				APP_LOG(write_result<0?APP_LOG_LEVEL_WARNING:APP_LOG_LEVEL_INFO,"write(%i) started(object): %i",3,write_result);
 		}
         for(int i=0;i<=plaps;i++){
 				write_result=persist_delete(4+i);
-				app_log(APP_LOG_LEVEL_INFO,"model deinit",55,"delete: %i",write_result);
+				APP_LOG((write_result<0?APP_LOG_LEVEL_WARNING:APP_LOG_LEVEL_INFO),"delete(%i) laps[%i]: %i",4+i,laps_count-plaps+i,write_result);
                 if(laps[laps_count-plaps+i]!=NULL){
                         write_result=persist_write_data(4+i,laps[laps_count-plaps+i],sizeof(Time));
-						app_log(APP_LOG_LEVEL_INFO,"model deinit",56,"write: %i",write_result);
-						app_log(APP_LOG_LEVEL_INFO,"model deinit",56,"lap[%i]: %i",i,(int)persist_exists(4+i));
+						APP_LOG((write_result<0?APP_LOG_LEVEL_WARNING:APP_LOG_LEVEL_INFO),"write(%i) laps[%i](object): %i",4+i,laps_count-plaps+i,write_result);
 				}
         }
         stopwatch_model_reset();

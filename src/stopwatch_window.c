@@ -236,7 +236,7 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 static void window_load(Window *window) {
-	app_log(APP_LOG_LEVEL_INFO,"window",238,"window_load()");
+	APP_LOG(APP_LOG_LEVEL_INFO,"window_load()");
 	// fonts //////////////////ú
 	font[0]=fonts_load_custom_font(resource_get_handle(FONT_TIME_DISPLAY));
 	font[1]=fonts_load_custom_font(resource_get_handle(FONT_TIME_DISPLAY_LABEL));
@@ -318,7 +318,7 @@ static void window_load(Window *window) {
 }
 
 static void window_appear(Window *window) {
-	app_log(APP_LOG_LEVEL_INFO,"window",320,"window_appear()");
+	APP_LOG(APP_LOG_LEVEL_INFO,"window_appear()");
 	stopwatch_window_update_time();
 	if(stopwatch_model_isRunning()){
 		tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
@@ -326,12 +326,12 @@ static void window_appear(Window *window) {
 }
 
 static void window_disappear(Window *window) {
-	app_log(APP_LOG_LEVEL_INFO,"window",328,"window_disappear()");
+	APP_LOG(APP_LOG_LEVEL_INFO,"window_disappear()");
 	tick_timer_service_unsubscribe();
 }
 
 static void window_unload(Window *window) {
-	app_log(APP_LOG_LEVEL_INFO,"window",332,"window_unload()");
+	APP_LOG(APP_LOG_LEVEL_INFO,"window_unload()");
 	tick_timer_service_unsubscribe();
 	//Time display
 	layer_destroy(time_display);
@@ -434,7 +434,7 @@ static void click_config_provider(void *context) {
 //Public intarface
 ////////////////////////////////////////////////////////////////////
 void stopwatch_window_init(){
-	app_log(APP_LOG_LEVEL_INFO,"window",436,"window_init()");
+	APP_LOG(APP_LOG_LEVEL_INFO,"window_init()");
 	stopwatch_window = window_create();
 	window_set_background_color	(stopwatch_window,GColorBlack);	
 	window_set_window_handlers(stopwatch_window, (WindowHandlers) {
@@ -447,7 +447,7 @@ void stopwatch_window_init(){
 }
 
 void stopwatch_window_deinit(){
-	app_log(APP_LOG_LEVEL_INFO,"window",449,"window_deinit()");
+	APP_LOG(APP_LOG_LEVEL_INFO,"window_deinit()");
 	window_stack_pop(true);
 	window_destroy(stopwatch_window);
 }
