@@ -34,6 +34,11 @@ void stopwatch_model_init(){
 					laps[i]=NULL;
 					laps_count=i==0?1:i;
 					APP_LOG(APP_LOG_LEVEL_WARNING,"laps_count: %i",laps_count);
+					if(i==0){
+						APP_LOG(APP_LOG_LEVEL_WARNING,"reset()");
+						stopwatch_model_reset();
+                		return;
+					}
 					break;
 				}
         }
