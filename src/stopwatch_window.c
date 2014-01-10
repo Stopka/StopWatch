@@ -7,7 +7,8 @@
 #define FONT_TIME_DISPLAY RESOURCE_ID_FONT_DEJAVU_SANS_BOLD_25
 #define FONT_TIME_DISPLAY_LABEL RESOURCE_ID_FONT_DEJAVU_SANS_12
 #define FONT_LAPS_DISPLAY_LAP RESOURCE_ID_FONT_DEJAVU_SANS_19
-	
+
+#define ICON RESOURCE_ID_ICON
 #define ICON_RESET RESOURCE_ID_ICON_RESET
 #define ICON_LAP RESOURCE_ID_ICON_LAP
 #define ICON_START RESOURCE_ID_ICON_STOPWATCH_START
@@ -30,7 +31,7 @@ static int laps_display_laps_count=0;
 static InverterLayer* laps_display_mark;
 //Action bar
 static ActionBarLayer* action_bar;	
-static GBitmap* bitmaps[5];
+static GBitmap* bitmaps[6];
 static GFont font[3];
 
 //STATE
@@ -237,6 +238,8 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
 
 static void window_load(Window *window) {
 	APP_LOG(APP_LOG_LEVEL_INFO,"window_load()");
+	bitmaps[5]=gbitmap_create_with_resource(ICON);
+	window_set_status_bar_icon(window,bitmaps[5]);
 	// fonts //////////////////ú
 	font[0]=fonts_load_custom_font(resource_get_handle(FONT_TIME_DISPLAY));
 	font[1]=fonts_load_custom_font(resource_get_handle(FONT_TIME_DISPLAY_LABEL));
@@ -347,7 +350,7 @@ static void window_unload(Window *window) {
 
 	//Action bar
 	action_bar_layer_destroy(action_bar);
-	for(int i=0;i<5;i++){
+	for(int i=0;i<6;i++){
 		gbitmap_destroy(bitmaps[i]);
 	}
 	

@@ -15,6 +15,11 @@
     "resources": {
         "media": [
             {
+                "type": "png",
+                "name": "ICON",
+                "file": "images/icon.png"
+            },
+            {
                 "menuIcon": true,
                 "type": "png",
                 "name": "LOGO",
