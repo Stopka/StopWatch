@@ -1,73 +1,41 @@
 {
-    "versionLabel": "1.0",
-    "uuid": "26e94ec2-9f28-4fde-8cdc-0222902b2ebb",
     "appKeys": {},
-    "longName": "Stopka's StopWatch",
-    "versionCode": 8,
     "capabilities": [
         ""
     ],
-    "shortName": "StopWatch",
     "companyName": "Stopka",
-    "watchapp": {
-        "watchface": false
-    },
+    "longName": "StopWatch & Timer",
+    "projectType": "native",
     "resources": {
         "media": [
             {
-                "type": "png",
-                "name": "ICON",
-                "file": "images/icon.png"
+                "file": "images/timer_add.png",
+                "name": "TIMER_ADD",
+                "type": "png"
             },
             {
+                "file": "images/stopwatch_add.png",
+                "name": "STOPWATCH_ADD",
+                "type": "png"
+            },
+            {
+                "file": "images/icon28.png",
                 "menuIcon": true,
-                "type": "png",
-                "name": "LOGO",
-                "file": "images/stopwatch.png"
+                "name": "ICON28",
+                "type": "png"
             },
             {
-                "type": "png",
-                "name": "ICON_DOWN",
-                "file": "images/down.png"
-            },
-            {
-                "type": "png",
-                "name": "ICON_STOPWATCH_STOP",
-                "file": "images/stopwatch_stop.png"
-            },
-            {
-                "type": "png",
-                "name": "ICON_STOPWATCH_START",
-                "file": "images/stopwatch_start.png"
-            },
-            {
-                "type": "png",
-                "name": "ICON_LAP",
-                "file": "images/lap.png"
-            },
-            {
-                "type": "png",
-                "name": "ICON_RESET",
-                "file": "images/reset.png"
-            },
-            {
-                "characterRegex": "[:0-9., ]",
-                "type": "font",
-                "name": "FONT_DEJAVU_SANS_19",
-                "file": "fonts/DejaVuSans.ttf"
-            },
-            {
-                "characterRegex": "[dhmsc#]",
-                "type": "font",
-                "name": "FONT_DEJAVU_SANS_12",
-                "file": "fonts/DejaVuSans.ttf"
-            },
-            {
-                "characterRegex": "[0-9.:, ]",
-                "type": "font",
-                "name": "FONT_DEJAVU_SANS_BOLD_25",
-                "file": "fonts/DejaVuSans-Bold.ttf"
+                "file": "images/icon16.png",
+                "name": "ICON16",
+                "type": "png"
             }
         ]
+    },
+    "shortName": "StopWatch",
+    "uuid": "26e94ec2-9f28-4fde-8cdc-0222902b2ebb",
+    "versionCode": 9,
+    "versionLabel": "3.0",
+    "watchapp": {
+        "watchface": false
     }
 }
