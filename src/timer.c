@@ -10,6 +10,12 @@ Timer* timer_create() {
 	return timer;
 }
 
+Timer* timer_create_stopwatch(){
+	Timer* t=timer_create();
+	t->direction=TIMER_DIRECTION_UP;
+	return t;
+}
+
 TimerStatus timer_getStatus(Timer* timer){
 	if(clock_isNull(&timer->started)){
 		return TIMER_STATUS_STOPPED;
@@ -31,12 +37,15 @@ void timer_start(Timer* timer) {
 		return; 
 	}
 	Clock* now = clock_createActual();
+	Clock* zero = clock_createNull();
 	if(clock_isNull(&timer->started)){
 		timer->started=*now;
 	}else{
 		Clock* delay=clock_subtract(now,&timer->stopped);
 		clock_add(&timer->started,delay);
 	}
+	timer->stopped=*zero;
+	clock_destroy(zero);
 	clock_destroy(now);
 }
 
@@ -51,14 +60,45 @@ void timer_stop(Timer* timer) {
 }
 
 void timer_reset(Timer* timer) {
-  	if (! timer) { return; }
-  	Clock* n=clock_createNull();
+	if (! timer) { return; }
+	Clock* n=clock_createNull();
 	timer->stopped=*n;
 	timer->started=*n;
 	clock_destroy(n);
 }
 
+void timer_lap(Timer* timer) {
+  	//TODO
+}
+
 void timer_destroy(Timer* timer) {
-	if (! timer) { return; }
 	free(timer);
+}
+
+Clock* timer_get_total_time(Timer* timer){
+	Clock* from=&timer->started;
+	Clock* to=timer_getStatus(timer)==TIMER_STATUS_RUNNING? clock_createActual(): clock_clone(&timer->stopped);
+	return clock_subtract(to,from);
+}
+
+uint8_t timer_setStopwatchTotalTime(Timer* timer,char* string,bool shorter){
+	uint8_t measure_offset;
+	Clock* time=timer_get_total_time(timer);
+	int vals[]={time->ms/10,time->sec%60,(time->sec/60)%60,(time->sec/(60*60))%24,(time->sec/(60*60*24))};
+	if(vals[4]%100>0){
+			snprintf(string, 12, "%05d %02d:%02d", vals[4],vals[3],vals[2]);
+			measure_offset=0;
+	}else if(vals[4]>0){
+			snprintf(string, 12, "%02d %02d:%02d:%02d", vals[4],vals[3],vals[2],vals[1]);
+			measure_offset=1;
+	}else{
+		if(timer_getStatus(timer)==TIMER_STATUS_RUNNING){
+			snprintf(string, 12, shorter?"%02d:%02d:%02d":"%02d:%02d:%02d.??", vals[3],vals[2],vals[1]);
+		}else{
+			snprintf(string, 12, shorter?"%02d:%02d:%02d":"%02d:%02d:%02d.%02d", vals[3],vals[2],vals[1],vals[0]);
+		}
+		measure_offset=2;
+	}
+	clock_destroy(time);
+	return measure_offset;
 }

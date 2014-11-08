@@ -1,13 +1,25 @@
 #include "timer.h"
+#include "bitmap-loader.h"
+#include "timers.h"
 #include "window_main.h"
+#include "window_stopwatch.h"
 void handle_init() {
 	timers_init();
+	
+	bitmaps_init();
+	
 	window_main_init();
+	window_stopwatch_init();
+	
 	window_main_show();
 }
 
 void handle_deinit() {
 	window_main_deinit();
+	window_stopwatch_deinit();
+	
+	bitmaps_cleanup();
+	
 	timers_deinit();
 }
 

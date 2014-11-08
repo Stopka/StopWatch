@@ -1,5 +1,6 @@
 #pragma once
 #include "clock.h"
+#include "laps.h"
 
 typedef enum {
   TIMER_STATUS_STOPPED,
@@ -15,17 +16,20 @@ typedef enum {
 	
 typedef struct Timer {
   TimerDirection direction;
-  Clock times[10];
-  Clock started;
+  Clock time;
+	Clock started;
   Clock stopped;
   bool repeat;
 } __attribute__((__packed__)) Timer;
 
 
-Timer* timer_create();
+Timer* timer_create_stopwatch();
 TimerStatus timer_getStatus(Timer*);
 TimerDirection timer_getDirection(Timer*);
 void timer_start(Timer*);
 void timer_stop(Timer*);
+void timer_lap(Timer*);
 void timer_reset(Timer*);
 void timer_destroy(Timer*);
+
+uint8_t timer_setStopwatchTotalTime(Timer* timer,char* string,bool shorter );
