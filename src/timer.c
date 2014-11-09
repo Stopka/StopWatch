@@ -13,6 +13,7 @@ Timer* timer_create() {
 Timer* timer_create_stopwatch(){
 	Timer* t=timer_create();
 	t->direction=TIMER_DIRECTION_UP;
+	t->laps=laps_create();
 	return t;
 }
 
@@ -40,9 +41,11 @@ void timer_start(Timer* timer) {
 	Clock* zero = clock_createNull();
 	if(clock_isNull(&timer->started)){
 		timer->started=*now;
+		laps_start(timer->laps,now,false);
 	}else{
 		Clock* delay=clock_subtract(now,&timer->stopped);
 		clock_add(&timer->started,delay);
+		laps_start(timer->laps,delay,true);
 	}
 	timer->stopped=*zero;
 	clock_destroy(zero);
@@ -65,13 +68,17 @@ void timer_reset(Timer* timer) {
 	timer->stopped=*n;
 	timer->started=*n;
 	clock_destroy(n);
+	laps_reset(timer->laps);
 }
 
 void timer_lap(Timer* timer) {
-  	//TODO
+	Clock* now=clock_createActual();
+	laps_add(timer->laps,now);
+	clock_destroy(now);
 }
 
 void timer_destroy(Timer* timer) {
+	laps_destroy(timer->laps);
 	free(timer);
 }
 

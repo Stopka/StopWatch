@@ -85,7 +85,8 @@ void handle_click_up(ClickRecognizerRef recognizer, void *context){
 	Timer* timer=timers_get_selected();
 	switch(timer_getStatus(timer)){
 		case TIMER_STATUS_RUNNING:
-			//timer_lap(timer);
+			timer_lap(timer);
+			//TODO update view
 			break;
 		case TIMER_STATUS_PAUSED:
 			timer_reset(timer);

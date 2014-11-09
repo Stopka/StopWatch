@@ -16,9 +16,10 @@ typedef enum {
 	
 typedef struct Timer {
   TimerDirection direction;
-  Clock time;
 	Clock started;
   Clock stopped;
+	Clock time;
+	Laps* laps;
   bool repeat;
 } __attribute__((__packed__)) Timer;
 
