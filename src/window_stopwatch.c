@@ -239,6 +239,7 @@ static void window_unload(Window* window){
 	for(uint8_t i=0;i<TEXT_LAYERS_COUNT;i++){
 		if(text_layers[i]!=NULL){
 			text_layer_destroy(text_layers[i]);
+			text_layers[i]=NULL;
 		}
 	}
 	lap_count=0;
