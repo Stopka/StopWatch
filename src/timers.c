@@ -1,8 +1,7 @@
 #include <pebble.h>
 #include "timers.h"
-#define TIMER_MAX_COUNT 15
 
-Timer* timers[TIMER_MAX_COUNT];
+Timer* timers[TIMERS_MAX_COUNT];
 uint8_t count=0;
 int8_t selected=-1;
 
@@ -22,12 +21,19 @@ uint8_t timers_add(Timer* timer) {
 }
 
 Timer* timers_add_stopwatch() {
+	if(count>=TIMERS_MAX_COUNT){
+		return NULL;
+	}
 	return timers_select(timers_add(timer_create_stopwatch()));
 }
 
 Timer* timers_select(uint8_t pos) {
 	selected=pos;
 	return timers_get_selected();
+}
+
+bool timers_isSpace() {
+	return count<TIMERS_MAX_COUNT;
 }
 
 Timer* timers_get_selected() {

@@ -47,7 +47,7 @@ static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t secti
       return timers_count();
 
     case 1:
-      return 1;
+      return timers_isSpace()?1:0;
 
     default:
       return 0;
@@ -88,6 +88,8 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 					timer_setStopwatchTotalTime(t,title,true);
 					timer_setLapTime(t,subtitle,0,true);
 					menu_cell_basic_draw(ctx,cell_layer,title,subtitle,bitmaps_get_bitmap(res_id));
+					free(title);
+					free(subtitle);
 					break;
 				case TIMER_DIRECTION_DOWN:
 					//TODO
