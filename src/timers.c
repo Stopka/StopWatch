@@ -7,7 +7,7 @@ uint8_t count=0;
 int8_t selected=-1;
 
 void timers_init() {
-  
+  APP_LOG(APP_LOG_LEVEL_INFO,"timers_init()");
 }
 
 uint8_t timers_count() {
@@ -64,6 +64,7 @@ void timers_remove_selected() {
 }
 
 void timers_deinit(void) {
+	APP_LOG(APP_LOG_LEVEL_INFO,"timers_deinit()");
   for(uint8_t i=0;i<count;i++){
 		timers_remove(i);
 	}

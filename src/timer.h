@@ -34,3 +34,4 @@ void timer_reset(Timer*);
 void timer_destroy(Timer*);
 
 uint8_t timer_setStopwatchTotalTime(Timer* timer,char* string,bool shorter );
+uint8_t timer_setLapTime(Timer* timer,char* string,uint8_t lap,bool shorter);

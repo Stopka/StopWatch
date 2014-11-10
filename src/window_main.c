@@ -17,6 +17,7 @@ void window_main_show() {
 }
 
 void window_main_init(){
+	APP_LOG(APP_LOG_LEVEL_INFO,"window_init()");
 	window_main = window_create();
 	window_set_window_handlers(window_main, (WindowHandlers) {
 		.load = window_load,
@@ -27,6 +28,7 @@ void window_main_init(){
 }
 
 void window_main_deinit(){
+	APP_LOG(APP_LOG_LEVEL_INFO,"window_deinit()");
 	window_destroy(window_main);
 }
 
@@ -81,9 +83,11 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
   					case TIMER_STATUS_PAUSED: res_id=RESOURCE_ID_STOPWATCH_PAUSED; break;
 						default: return;
 					}
-					char* string="00 00:00:00";
-					timer_setStopwatchTotalTime(t,string,true);
-					menu_cell_basic_draw(ctx,cell_layer,string,NULL,bitmaps_get_bitmap(res_id));
+					char* title=(char *)malloc(12*sizeof(char));//"00 00:00:00";
+					char* subtitle=(char *)malloc(17*sizeof(char));//"000 00:00:00.00";
+					timer_setStopwatchTotalTime(t,title,true);
+					timer_setLapTime(t,subtitle,0,true);
+					menu_cell_basic_draw(ctx,cell_layer,title,subtitle,bitmaps_get_bitmap(res_id));
 					break;
 				case TIMER_DIRECTION_DOWN:
 					//TODO
@@ -132,6 +136,7 @@ void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *da
 }
 
 static void window_load(Window* window){
+	APP_LOG(APP_LOG_LEVEL_INFO,"window_load()");
 	Layer *window_layer = window_get_root_layer(window);
 	GRect bounds = layer_get_frame(window_layer);
 	window_main_menu_layer=menu_layer_create(bounds);
@@ -150,6 +155,7 @@ static void window_load(Window* window){
 }
 
 static void window_appear(Window *window) {
+	APP_LOG(APP_LOG_LEVEL_INFO,"window_appear()");
 	menu_layer_reload_data(window_main_menu_layer);
 	int8_t index=timers_get_selectedIndex();
 	menu_layer_set_selected_index(window_main_menu_layer,(MenuIndex){
@@ -161,10 +167,12 @@ static void window_appear(Window *window) {
 }
 
 static void window_disappear(Window *window) {
+	APP_LOG(APP_LOG_LEVEL_INFO,"window_disappear()");
 	tick_timer_service_unsubscribe();
 }
 
 
 static void window_unload(Window* window){
+	APP_LOG(APP_LOG_LEVEL_INFO,"window_unload()");
 	menu_layer_destroy(window_main_menu_layer);
 }
