@@ -1,13 +1,15 @@
 #include "clock.h"
 
 Clock* clock_subtract(Clock* a,Clock* b){
+	//APP_LOG(APP_LOG_LEVEL_INFO,"clock_subtract a(%d,%d)-b(%d,%d)",(int)a->sec,(int)a->ms,(int)b->sec,(int)b->ms);
 	a->sec-=b->sec;
 	if(a->ms<b->ms){
 		a->sec--;
-		a->ms=1000-b->ms;
+		a->ms=1000+a->ms-b->ms;
 	}else{
 		a->ms-=b->ms;
 	}
+	//APP_LOG(APP_LOG_LEVEL_INFO,"result(%d,%d)",(int)a->sec,(int)a->ms);
 	return a;
 }
 

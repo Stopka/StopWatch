@@ -16,9 +16,12 @@ Laps* laps_create(void){
 }
 
 void laps_add(Laps* laps,Clock* clock){
+	//APP_LOG(APP_LOG_LEVEL_INFO,"laps_add()");
 	for(uint8_t i=LAPS_MAX_COUNT-1;i>0;i--){
+			//APP_LOG(APP_LOG_LEVEL_INFO,"move clock(%d,%d) %d>%d",(int)laps->times[i].sec,laps->times[i].ms,i-1,i);
 			laps->times[i]=laps->times[i-1];
 	}
+	//APP_LOG(APP_LOG_LEVEL_INFO,"save clock(%d,%d) >0",(int)clock->sec,clock->ms);
 	laps->times[0]=*clock;
 	laps->count++;
 }
