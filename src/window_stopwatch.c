@@ -70,7 +70,7 @@ void update_laps(){
 	GRect bounds = layer_get_frame(window_layer);	
 	const int16_t width = bounds.size.w - ACTION_BAR_WIDTH - 3;
 	Timer* timer=timers_get_selected();
-	int8_t actual_count=laps_count(timer->laps);
+	int8_t actual_count=laps_count(&timer->laps);
 	for(int8_t i=lap_count-1;i>=actual_count;i--){//remove
 		layer_remove_from_parent((Layer *) text_layers[TEXT_LAYER_LAP+i]);	
 		text_layer_destroy(text_layers[TEXT_LAYER_LAP+i]);

@@ -18,8 +18,7 @@ typedef struct Timer {
   TimerDirection direction;
 	Clock started;
   Clock stopped;
-	Clock time;
-	Laps* laps;
+	Laps laps;
   bool repeat;
 } __attribute__((__packed__)) Timer;
 

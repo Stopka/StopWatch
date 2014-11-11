@@ -8,12 +8,6 @@ void laps_reset(Laps* laps){
 	laps->times[0]=*n;
 	clock_destroy(n);
 }
-	
-Laps* laps_create(void){
-	Laps* laps=malloc(sizeof(Laps));
-	laps_reset(laps);
-	return laps;
-}
 
 void laps_add(Laps* laps,Clock* clock){
 	//APP_LOG(APP_LOG_LEVEL_DEBUG,"laps_add()");
@@ -36,11 +30,6 @@ void laps_start(Laps* laps,Clock* clock,bool restart){
 	}
 	laps->times[0]=*clock;
 	laps->count=1;
-}
-
-void laps_destroy(Laps* laps){
-	if(!laps){return;}
-	free(laps);
 }
 
 uint8_t laps_count(Laps* laps){

@@ -1,7 +1,7 @@
 #include <pebble.h>
 #include "timers.h"
 
-#define STORAGE_VERSION 0
+#define STORAGE_VERSION 1
 #define STORAGE_KEY_VERSION 0
 #define STORAGE_KEY_COUNT 1
 #define STORAGE_KEY_DATA 2
@@ -31,34 +31,20 @@ void storage_load(){
 	APP_LOG(APP_LOG_LEVEL_INFO,"storage count: %d",storage_count);
 	Timer* timer;
 	int result;
-	for(uint8_t i=0;i<storage_count;i+=2){
+	for(uint8_t i=0;i<storage_count;i++){
 		if(!persist_exists(STORAGE_KEY_DATA+i)){ 
-			APP_LOG(APP_LOG_LEVEL_ERROR,"missing timer %d in storage %d",i/2,i); 
+			APP_LOG(APP_LOG_LEVEL_ERROR,"missing timer %d in storage %d",i,STORAGE_KEY_DATA+i); 
 			continue;
 		}
 		timer=timer_create();
 		result=persist_read_data(STORAGE_KEY_DATA+i,timer,sizeof(Timer));
 		if(result<0){
-			APP_LOG(APP_LOG_LEVEL_ERROR,"read error timer %d in storage %d",i/2,i);
+			APP_LOG(APP_LOG_LEVEL_ERROR,"read error timer %d in storage %d",i,STORAGE_KEY_DATA+i);
 			timer_destroy(timer);
 			continue;
 		}
-		if(timer_getDirection(timer)==TIMER_DIRECTION_UP){
-			if(!persist_exists(STORAGE_KEY_DATA+i+1)){ 
-				APP_LOG(APP_LOG_LEVEL_ERROR,"missing laps %d in storage %d",i/2,i+1);
-				timer_destroy(timer);
-				continue;
-			}
-			timer->laps=laps_create();
-			result=persist_read_data(STORAGE_KEY_DATA+i+1,timer->laps,sizeof(Laps));
-			if(result<0){ 
-				APP_LOG(APP_LOG_LEVEL_ERROR,"read error laps %d in storage %d",i/2,i+1); 
-				timer_destroy(timer);
-				continue;
-			}
-		}
 		timers_add(timer);
-		APP_LOG(APP_LOG_LEVEL_INFO,"loaded timer %d",i/2);
+		APP_LOG(APP_LOG_LEVEL_INFO,"loaded timer %d",i);
 	}
 		
 	APP_LOG(APP_LOG_LEVEL_INFO,"loaded");
@@ -131,26 +117,27 @@ void timers_remove_selected() {
 	
 void storage_store(){
 	APP_LOG(APP_LOG_LEVEL_INFO,"storage_store()");
+	APP_LOG(APP_LOG_LEVEL_INFO,"max_cell_size: %d timer_size: %d laps_size: %d clock_size: %d",PERSIST_DATA_MAX_LENGTH,sizeof(Timer),sizeof(Laps),sizeof(Clock));
 	
 	int result;
 	uint8_t c=timers_count();
 	
-	result=persist_delete(STORAGE_KEY_VERSION);
+	/*result=persist_delete(STORAGE_KEY_VERSION);
 	if(result<0){
 		APP_LOG(APP_LOG_LEVEL_ERROR,"delete error version in storage %d #%d",STORAGE_KEY_VERSION,result); 
 		return;
-	}
+	}*/
 	result=persist_write_int(STORAGE_KEY_VERSION,STORAGE_VERSION);
 	if(result<0){
 		APP_LOG(APP_LOG_LEVEL_ERROR,"write error version %d in storage %d #%d",STORAGE_VERSION,STORAGE_KEY_VERSION,result); 
 		return;
 	}
 	
-	result=persist_delete(STORAGE_KEY_COUNT);
+	/*result=persist_delete(STORAGE_KEY_COUNT);
 	if(result<0){
 		APP_LOG(APP_LOG_LEVEL_ERROR,"delete error count in storage %d #%d",STORAGE_KEY_COUNT,result); 
 		return;
-	}
+	}*/
 	result=persist_write_int(STORAGE_KEY_COUNT,c);
 	if(result<0){
 		APP_LOG(APP_LOG_LEVEL_ERROR,"write error count %d in storage %d #%d",c,STORAGE_KEY_COUNT,result); 
@@ -161,28 +148,15 @@ void storage_store(){
 	Timer* timer;
 	for(uint8_t i=0;i<c;i++){
 		timer=timers_get(i);
-		result=persist_delete(STORAGE_KEY_DATA+(2*i));
+		/*result=persist_delete(STORAGE_KEY_DATA+(2*i));
 		if(result<0){
 			APP_LOG(APP_LOG_LEVEL_ERROR,"delete error timer %d in storage %d #%d",i,STORAGE_KEY_DATA+(2*i),result); 
 			continue;
-		}
-		result=persist_write_data(STORAGE_KEY_DATA+(2*i),timer,sizeof(Timer));
+		}*/
+		result=persist_write_data(STORAGE_KEY_DATA+i,timer,sizeof(Timer));
 		if(result<0){
-			APP_LOG(APP_LOG_LEVEL_ERROR,"write error timer %d in storage %d #%d",i,STORAGE_KEY_DATA+(2*i),result); 
+			APP_LOG(APP_LOG_LEVEL_ERROR,"write error timer %d in storage %d #%d",i,STORAGE_KEY_DATA+i,result); 
 			continue;
-		}
-		
-		if(timer->laps!=NULL){
-			result=persist_delete(STORAGE_KEY_DATA+(2*i)+1);
-			if(result<0){
-				APP_LOG(APP_LOG_LEVEL_ERROR,"delete error laps %d in storage %d #%d",i,STORAGE_KEY_DATA+(2*i)+1,result); 
-				continue;
-			}
-			result=persist_write_data(STORAGE_KEY_DATA+(2*i)+1,timer->laps,sizeof(Laps));
-			if(result<0){
-				APP_LOG(APP_LOG_LEVEL_ERROR,"write error laps %d in storage %d #%d",i,STORAGE_KEY_DATA+(2*i)+1,result); 
-				continue;
-			}
 		}
 		APP_LOG(APP_LOG_LEVEL_INFO,"stored timer %d",i);
 	}
