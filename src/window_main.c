@@ -85,7 +85,7 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 					}
 					char* title=(char *)malloc(12*sizeof(char));//"00 00:00:00";
 					char* subtitle=(char *)malloc(17*sizeof(char));//"000 00:00:00.00";
-					timer_setStopwatchTotalTime(t,title,true);
+					timer_setStopwatchTotalTime(t,title,0,true);
 					timer_setLapTime(t,subtitle,0,true);
 					menu_cell_basic_draw(ctx,cell_layer,title,subtitle,bitmaps_get_bitmap(res_id));
 					free(title);

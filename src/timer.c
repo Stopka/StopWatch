@@ -81,21 +81,16 @@ void timer_destroy(Timer* timer) {
 	free(timer);
 }
 
-Clock* timer_get_total_time(Timer* timer){
-	Clock* from=&timer->started;
-	Clock* to=timer_getStatus(timer)==TIMER_STATUS_RUNNING? clock_createActual(): clock_clone(&timer->stopped);
+Clock* timer_get_stopwatch_lap_time(Timer* timer,uint8_t i,bool total){
+	Clock* from=total?&timer->started:laps_get(&timer->laps,i);
+	Clock* prev=laps_get(&timer->laps,i-1);
+	Clock* to=prev!=NULL?clock_clone(prev):(timer_getStatus(timer)==TIMER_STATUS_RUNNING? clock_createActual(): clock_clone(&timer->stopped));
 	return clock_subtract(to,from);
 }
 
-Clock* timer_get_stopwatch_total_time(Timer* timer){
-	Clock* from=&timer->started;
-	Clock* to=timer_getStatus(timer)==TIMER_STATUS_RUNNING? clock_createActual(): clock_clone(&timer->stopped);
-	return clock_subtract(to,from);
-}
-
-uint8_t timer_setStopwatchTotalTime(Timer* timer,char* string,bool shorter){
+uint8_t timer_setStopwatchTotalTime(Timer* timer,char* string,uint8_t lap,bool shorter){
 	uint8_t measure_offset;
-	Clock* time=timer_get_total_time(timer);
+	Clock* time=timer_get_stopwatch_lap_time(timer,lap,true);;
 	int vals[]={time->ms/10,time->sec%60,(time->sec/60)%60,(time->sec/(60*60))%24,(time->sec/(60*60*24))};
 	if(vals[4]%100>0){
 			snprintf(string, 12, "%05d %02d:%02d", vals[4],vals[3],vals[2]);
@@ -104,7 +99,7 @@ uint8_t timer_setStopwatchTotalTime(Timer* timer,char* string,bool shorter){
 			snprintf(string, 12, "%02d %02d:%02d:%02d", vals[4],vals[3],vals[2],vals[1]);
 			measure_offset=1;
 	}else{
-		if(timer_getStatus(timer)==TIMER_STATUS_RUNNING){
+		if(timer_getStatus(timer)==TIMER_STATUS_RUNNING&&lap==0){
 			snprintf(string, 12, shorter?"%02d:%02d:%02d":"%02d:%02d:%02d.??", vals[3],vals[2],vals[1]);
 		}else{
 			snprintf(string, 12, "%02d:%02d:%02d.%02d", vals[3],vals[2],vals[1],vals[0]);
@@ -115,16 +110,9 @@ uint8_t timer_setStopwatchTotalTime(Timer* timer,char* string,bool shorter){
 	return measure_offset;
 }
 
-Clock* timer_get_stopwatch_lap_time(Timer* timer,uint8_t i){
-	Clock* from=laps_get(&timer->laps,i);
-	Clock* prev=laps_get(&timer->laps,i-1);
-	Clock* to=prev!=NULL?clock_clone(prev):(timer_getStatus(timer)==TIMER_STATUS_RUNNING? clock_createActual(): clock_clone(&timer->stopped));
-	return clock_subtract(to,from);
-}
-
 uint8_t timer_setLapTime(Timer* timer,char* string,uint8_t lap,bool shorter){
 	uint8_t measure_offset;
-	Clock* time=timer_get_stopwatch_lap_time(timer,lap);
+	Clock* time=timer_get_stopwatch_lap_time(timer,lap,false);
 	uint8_t lap_numer=laps_get_number(&timer->laps,lap);
 	int vals[]={time->ms/10,time->sec%60,(time->sec/60)%60,(time->sec/(60*60))%24,(time->sec/(60*60*24))};
 	if(vals[4]%100>0){
