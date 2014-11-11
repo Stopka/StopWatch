@@ -1,7 +1,7 @@
 #include "clock.h"
 
 Clock* clock_subtract(Clock* a,Clock* b){
-	//APP_LOG(APP_LOG_LEVEL_INFO,"clock_subtract a(%d,%d)-b(%d,%d)",(int)a->sec,(int)a->ms,(int)b->sec,(int)b->ms);
+	//APP_LOG(APP_LOG_LEVEL_DEBUG,"clock_subtract a(%d,%d)-b(%d,%d)",(int)a->sec,(int)a->ms,(int)b->sec,(int)b->ms);
 	a->sec-=b->sec;
 	if(a->ms<b->ms){
 		a->sec--;
@@ -9,7 +9,7 @@ Clock* clock_subtract(Clock* a,Clock* b){
 	}else{
 		a->ms-=b->ms;
 	}
-	//APP_LOG(APP_LOG_LEVEL_INFO,"result(%d,%d)",(int)a->sec,(int)a->ms);
+	//APP_LOG(APP_LOG_LEVEL_DEBUG,"result(%d,%d)",(int)a->sec,(int)a->ms);
 	return a;
 }
 

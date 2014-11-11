@@ -23,7 +23,7 @@ typedef struct Timer {
   bool repeat;
 } __attribute__((__packed__)) Timer;
 
-
+Timer* timer_create();
 Timer* timer_create_stopwatch();
 TimerStatus timer_getStatus(Timer*);
 TimerDirection timer_getDirection(Timer*);

@@ -6,6 +6,7 @@ Timer* timer_create() {
 	Clock* c=clock_createNull();
 	timer->started=*c;
 	timer->stopped=*c;
+	timer->laps=NULL;
 	clock_destroy(c);
 	return timer;
 }
@@ -78,7 +79,9 @@ void timer_lap(Timer* timer) {
 }
 
 void timer_destroy(Timer* timer) {
-	laps_destroy(timer->laps);
+	if(timer->laps!=NULL){
+		laps_destroy(timer->laps);
+	}
 	free(timer);
 }
 
