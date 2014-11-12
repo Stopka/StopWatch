@@ -92,8 +92,8 @@ uint8_t timer_setStopwatchTotalTime(Timer* timer,char* string,uint8_t lap,bool s
 	uint8_t measure_offset;
 	Clock* time=timer_get_stopwatch_lap_time(timer,lap,true);;
 	int vals[]={time->ms/10,time->sec%60,(time->sec/60)%60,(time->sec/(60*60))%24,(time->sec/(60*60*24))};
-	if(vals[4]%100>0){
-			snprintf(string, 12, "%05d %02d:%02d", vals[4],vals[3],vals[2]);
+	if(vals[4]/100>0){
+			snprintf(string, 12, "%04d %02d:%02d", vals[4],vals[3],vals[2]);
 			measure_offset=0;
 	}else if(vals[4]>0){
 			snprintf(string, 12, "%02d %02d:%02d:%02d", vals[4],vals[3],vals[2],vals[1]);
@@ -115,8 +115,8 @@ uint8_t timer_setLapTime(Timer* timer,char* string,uint8_t lap,bool shorter){
 	Clock* time=timer_get_stopwatch_lap_time(timer,lap,false);
 	uint8_t lap_numer=laps_get_number(&timer->laps,lap);
 	int vals[]={time->ms/10,time->sec%60,(time->sec/60)%60,(time->sec/(60*60))%24,(time->sec/(60*60*24))};
-	if(vals[4]%100>0){
-			snprintf(string, 17, "%03d  %05d %02d:%02d", lap_numer,vals[4],vals[3],vals[2]);
+	if(vals[4]/100>0){
+			snprintf(string, 17, "%03d  %04d %02d:%02d", lap_numer,vals[4],vals[3],vals[2]);
 			measure_offset=0;
 	}else if(vals[4]>0){
 			snprintf(string, 17, "%03d  %02d %02d:%02d:%02d", lap_numer,vals[4],vals[3],vals[2],vals[1]);
