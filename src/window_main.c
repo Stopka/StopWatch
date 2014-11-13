@@ -112,7 +112,7 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
   }
 }
 
-void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
+static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 	switch (cell_index->section) {
 		case 0:
 			timers_select(cell_index->row);

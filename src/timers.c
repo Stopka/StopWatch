@@ -60,8 +60,7 @@ uint8_t timers_count() {
 }
 
 uint8_t timers_add(Timer* timer) {
-	uint8_t pos=count;
-	count++;
+	uint8_t pos=count++;
 	timers[pos]=timer;
 	return pos;
 }
@@ -169,7 +168,7 @@ void timers_deinit(void) {
 	
 	APP_LOG(APP_LOG_LEVEL_INFO,"cleaning..");
   for(uint8_t i=0;i<count;i++){
-		timers_remove(i);
+		free(timers[i]);
 	}
 	APP_LOG(APP_LOG_LEVEL_INFO,"cleaned");
 }
