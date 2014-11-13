@@ -5,7 +5,7 @@
 	
 #define BITMAP_GROUP_BUTTON_UP 1
 
-#define TEXT_LAYERS_COUNT 2+LAPS_MAX_COUNT
+#define TEXT_LAYERS_COUNT 1+LAPS_MAX_COUNT
 #define TEXT_LAYER_TIME 0 //1 item
 #define TEXT_LAYER_LAP 1 //laps_count+1 items
 	
@@ -16,6 +16,7 @@ static void window_unload(Window* window);
 	
 static Window*    window_stopwatch;
 static TextLayer* text_layers[TEXT_LAYERS_COUNT];
+char* text_layer_buffers[TEXT_LAYERS_COUNT];
 ActionBarLayer* action_bar;
 InverterLayer* line;
 InverterLayer* laps_mark;
@@ -75,12 +76,14 @@ void update_laps(){
 		layer_remove_from_parent((Layer *) text_layers[TEXT_LAYER_LAP+i]);	
 		text_layer_destroy(text_layers[TEXT_LAYER_LAP+i]);
 		text_layers[TEXT_LAYER_LAP+i]=NULL;
+		free(text_layer_buffers[TEXT_LAYER_LAP+i]);
+		text_layer_buffers[TEXT_LAYER_LAP+i]=NULL;
 		lap_count--;
 	}
 	for(uint8_t i=lap_count;i<actual_count;i++){//add
-		char* string = (char *)malloc(17*sizeof(char));
+		text_layer_buffers[TEXT_LAYER_LAP+i]=(char *)malloc(17*sizeof(char));
 		text_layers[TEXT_LAYER_LAP+i] = text_layer_create(GRect(3,-5+(i*21), width, 24));
-		text_layer_set_text(text_layers[TEXT_LAYER_LAP+i], string);
+		text_layer_set_text(text_layers[TEXT_LAYER_LAP+i], text_layer_buffers[TEXT_LAYER_LAP+i]);
 		text_layer_set_font(text_layers[TEXT_LAYER_LAP+i],fonts_get_system_font(FONT_KEY_GOTHIC_24));
 		text_layer_set_text_alignment(text_layers[TEXT_LAYER_LAP+i],GTextAlignmentLeft);
 		text_layer_set_text_color(text_layers[TEXT_LAYER_LAP+i],GColorWhite);
@@ -190,8 +193,9 @@ static void window_load(Window* window){
 	bitmap_layer_set_compositing_mode(state,GCompOpSet);
 	layer_add_child(window_layer,bitmap_layer_get_layer(state));
 	
+	text_layer_buffers[TEXT_LAYER_TIME]=(char *)malloc(12*sizeof(char));
 	text_layers[TEXT_LAYER_TIME] = text_layer_create(GRect(14, 5, time_width, 28));
-  text_layer_set_text(text_layers[TEXT_LAYER_TIME], "00:00:00.00");
+  text_layer_set_text(text_layers[TEXT_LAYER_TIME], text_layer_buffers[TEXT_LAYER_TIME]);
 	text_layer_set_font(text_layers[TEXT_LAYER_TIME],fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
 	text_layer_set_text_alignment(text_layers[TEXT_LAYER_TIME],GTextAlignmentCenter);
 	text_layer_set_text_color(text_layers[TEXT_LAYER_TIME],GColorWhite);
@@ -240,6 +244,7 @@ static void window_unload(Window* window){
 		if(text_layers[i]!=NULL){
 			text_layer_destroy(text_layers[i]);
 			text_layers[i]=NULL;
+			free(text_layer_buffers[i]);
 		}
 	}
 	lap_count=0;
