@@ -5,9 +5,14 @@
 	
 #define BITMAP_GROUP_BUTTON_UP 1
 
-#define TEXT_LAYERS_COUNT 1+LAPS_MAX_COUNT
+#define TEXT_LAYERS_COUNT 2+LAPS_MAX_COUNT
 #define TEXT_LAYER_TIME 0 //1 item
 #define TEXT_LAYER_LAP 1 //laps_count+1 items
+	
+#define ANIMATIONS_COUNT 2+LAPS_MAX_COUNT
+#define ANIMATION_MARK 0 //1 item
+#define ANIMATION_LAP 1 //laps_count+1 items
+	
 	
 static void window_load(Window* window);
 static void window_appear(Window* window);
@@ -17,6 +22,7 @@ static void window_unload(Window* window);
 static Window*    window_stopwatch;
 static TextLayer* text_layers[TEXT_LAYERS_COUNT];
 char* text_layer_buffers[TEXT_LAYERS_COUNT];
+static PropertyAnimation* animations[ANIMATIONS_COUNT];
 ActionBarLayer* action_bar;
 InverterLayer* line;
 InverterLayer* laps_mark;
@@ -47,6 +53,19 @@ void window_stopwatch_deinit(){
 	window_destroy(window_stopwatch);
 }
 
+void animation_clear(int i){
+	if(animations[i]!=NULL){
+		animation_unschedule((Animation*)animations[i]);
+	}
+}
+
+void handle_general_animation_stopped(Animation *anim, bool finished, void *data) {
+	int* i=(int*)data;
+	property_animation_destroy(animations[*i]);
+	animations[*i]=NULL;
+	free (i);
+}
+
 void update_lap(Timer* timer,uint8_t i){
 	timer_setLapTime(timer,(char*)text_layer_get_text(text_layers[TEXT_LAYER_LAP+i]),i,false);
 	layer_mark_dirty((Layer *)text_layers[TEXT_LAYER_LAP+i]);
@@ -59,10 +78,21 @@ void update_time(){
 	update_lap(timer,0);
 }
 
-void update_selected(){
-	update_time();
+void update_selected(bool animated){
 	GRect to_frame = GRect(0,21*selected_lap,33,22);
-	layer_set_frame(inverter_layer_get_layer(laps_mark),to_frame);
+	if(animated){
+		int* data=malloc(sizeof(int));
+		*data=ANIMATION_MARK;
+		animation_clear(*data);
+		animations[*data]=property_animation_create_layer_frame((Layer*)laps_mark,NULL,&to_frame);
+		animation_set_handlers((Animation*) animations[*data], (AnimationHandlers) {
+					.stopped = (AnimationStoppedHandler) handle_general_animation_stopped,
+				}, data);
+		animation_schedule((Animation*) animations[*data]);
+	}else{
+		layer_set_frame(inverter_layer_get_layer(laps_mark),to_frame);
+	}
+	update_time();
 	scroll_layer_set_content_offset(scroll_layer,GPoint(0,-21*(selected_lap-1)),true);
 }
 
@@ -136,7 +166,7 @@ void handle_click_up(ClickRecognizerRef recognizer, void *context){
 			update_state();
 			update_laps();
 			selected_lap=0;
-			update_selected();
+			update_selected(true);
 			break;
 		default://delete
 			tick_timer_service_unsubscribe();
@@ -161,12 +191,12 @@ void handle_click_select(ClickRecognizerRef recognizer, void *context){
 
 void handle_click_down(ClickRecognizerRef recognizer, void *context){
 	selected_lap=(selected_lap+1)%lap_count;
-	update_selected();
+	update_selected(true);
 }
 
 static void handle_down_long_click(ClickRecognizerRef recognizer, void *context){
 	selected_lap=((selected_lap==0)?(lap_count-1):(selected_lap-1));
-	update_selected();
+	update_selected(true);
 }
 
 static void click_config_provider(void *context) {
@@ -222,14 +252,14 @@ static void window_load(Window* window){
 	
 	update_laps();
 	update_state();
-	update_selected();
+	update_selected(false);
 }
 
 static void window_appear(Window *window) {
 	APP_LOG(APP_LOG_LEVEL_INFO,"window_appear()");
 	Timer* timer=timers_get_selected();
 	selected_lap=0;
-	update_selected();
+	update_selected(false);
 	if(timer_getStatus(timer)==TIMER_STATUS_RUNNING){
 		tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
 	}
@@ -249,7 +279,9 @@ static void window_unload(Window* window){
 			free(text_layer_buffers[i]);
 		}
 	}
-	lap_count=0;
+	for(uint8_t i=0;i<ANIMATIONS_COUNT;i++){
+		animation_clear(i);
+	}
 	inverter_layer_destroy(line);
 	inverter_layer_destroy(laps_mark);
 	bitmap_layer_destroy(state);
