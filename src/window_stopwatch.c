@@ -228,6 +228,8 @@ static void window_load(Window* window){
 static void window_appear(Window *window) {
 	APP_LOG(APP_LOG_LEVEL_INFO,"window_appear()");
 	Timer* timer=timers_get_selected();
+	selected_lap=0;
+	update_selected();
 	if(timer_getStatus(timer)==TIMER_STATUS_RUNNING){
 		tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
 	}
