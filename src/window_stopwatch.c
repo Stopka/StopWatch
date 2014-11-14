@@ -115,6 +115,7 @@ void update_laps(bool animate){
 	Timer* timer=timers_get_selected();
 	int8_t actual_count=laps_count(&timer->laps);
 	if(animate&&actual_count==lap_count&&actual_count==LAPS_MAX_COUNT){//remove last row
+		animation_clear(ANIMATION_LAP+LAPS_MAX_COUNT);
 		GRect to_frame = GRect(3,-5+(LAPS_MAX_COUNT*21), width, 24);
 		lap_count--;
 		int* data=malloc(sizeof(int));
@@ -130,11 +131,19 @@ void update_laps(bool animate){
 		animation_schedule((Animation*) animations[*data]);
 	}
 	for(int8_t i=lap_count-1;i>=actual_count;i--){//remove
-		layer_remove_from_parent((Layer *) text_layers[TEXT_LAYER_LAP+i]);	
-		text_layer_destroy(text_layers[TEXT_LAYER_LAP+i]);
-		text_layers[TEXT_LAYER_LAP+i]=NULL;
-		free(text_layer_buffers[TEXT_LAYER_LAP+i]);
-		text_layer_buffers[TEXT_LAYER_LAP+i]=NULL;
+		animation_clear(ANIMATION_LAP+i);
+		int* data=malloc(sizeof(int));
+		*data=ANIMATION_LAP+i;
+		if(!animate){
+			handle_remove_lap_animation_stopped(NULL, false, data);
+			continue;
+		}
+		GRect to_frame = GRect(-width,-5+(i*21), width, 24);
+		animations[*data]=property_animation_create_layer_frame((Layer*)text_layers[*data],NULL,&to_frame);
+		animation_set_handlers((Animation*) animations[*data], (AnimationHandlers) {
+        .stopped = (AnimationStoppedHandler) handle_remove_lap_animation_stopped,
+      }, data);
+		animation_schedule((Animation*) animations[*data]);
 		lap_count--;
 	}
 	for(uint8_t i=lap_count;i<actual_count;i++){//add
