@@ -59,11 +59,23 @@ void animation_clear(int i){
 	}
 }
 
-void handle_general_animation_stopped(Animation *anim, bool finished, void *data) {
-	int* i=(int*)data;
-	property_animation_destroy(animations[*i]);
-	animations[*i]=NULL;
-	free (i);
+static void handle_general_animation_stopped(Animation *anim, bool finished, void *data) {
+	int i=*((int*)data);
+	if(animations[i]!=NULL){
+		property_animation_destroy(animations[i]);
+		animations[i]=NULL;
+	}
+	free (data);
+}
+
+static void handle_remove_lap_animation_stopped(Animation *anim, bool finished, void *data) {
+	int i=*((int*)data);
+	layer_remove_from_parent((Layer *) text_layers[i]);	
+	text_layer_destroy(text_layers[i]);
+	text_layers[i]=NULL;
+	free(text_layer_buffers[i]);
+	text_layer_buffers[i]=NULL;
+	handle_general_animation_stopped(anim, finished, data);
 }
 
 void update_lap(Timer* timer,uint8_t i){
@@ -96,12 +108,27 @@ void update_selected(bool animated){
 	scroll_layer_set_content_offset(scroll_layer,GPoint(0,-21*(selected_lap-1)),true);
 }
 
-void update_laps(){
+void update_laps(bool animate){
 	Layer *window_layer = window_get_root_layer(window_stopwatch);
 	GRect bounds = layer_get_frame(window_layer);	
 	const int16_t width = bounds.size.w - ACTION_BAR_WIDTH - 3;
 	Timer* timer=timers_get_selected();
 	int8_t actual_count=laps_count(&timer->laps);
+	if(animate&&actual_count==lap_count&&actual_count==LAPS_MAX_COUNT){//remove last row
+		GRect to_frame = GRect(3,-5+(LAPS_MAX_COUNT*21), width, 24);
+		lap_count--;
+		int* data=malloc(sizeof(int));
+		*data=ANIMATION_LAP+LAPS_MAX_COUNT;
+		text_layers[*data]=text_layers[(*data)-1];
+		text_layers[(*data)-1]=NULL;
+		text_layer_buffers[*data]=text_layer_buffers[(*data)-1];
+		text_layer_buffers[(*data)-1]=NULL;
+		animations[*data]=property_animation_create_layer_frame((Layer*)text_layers[*data],NULL,&to_frame);
+		animation_set_handlers((Animation*) animations[*data], (AnimationHandlers) {
+        .stopped = (AnimationStoppedHandler) handle_remove_lap_animation_stopped,
+      }, data);
+		animation_schedule((Animation*) animations[*data]);
+	}
 	for(int8_t i=lap_count-1;i>=actual_count;i--){//remove
 		layer_remove_from_parent((Layer *) text_layers[TEXT_LAYER_LAP+i]);	
 		text_layer_destroy(text_layers[TEXT_LAYER_LAP+i]);
@@ -159,12 +186,12 @@ void handle_click_up(ClickRecognizerRef recognizer, void *context){
 	switch(timer_getStatus(timer)){
 		case TIMER_STATUS_RUNNING://new lap
 			timer_lap(timer);
-			update_laps();
+			update_laps(true);
 			break;
 		case TIMER_STATUS_PAUSED://reset
 			timer_reset(timer);
 			update_state();
-			update_laps();
+			update_laps(true);
 			selected_lap=0;
 			update_selected(true);
 			break;
@@ -250,7 +277,7 @@ static void window_load(Window* window){
 	action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, bitmaps_get_bitmap(RESOURCE_ID_ACTION_DOWN));
 	action_bar_layer_set_click_config_provider(action_bar,click_config_provider);
 	
-	update_laps();
+	update_laps(false);
 	update_state();
 	update_selected(false);
 }
