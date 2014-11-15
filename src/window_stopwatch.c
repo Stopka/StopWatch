@@ -78,6 +78,15 @@ static void handle_remove_lap_animation_stopped(Animation *anim, bool finished, 
 	handle_general_animation_stopped(anim, finished, data);
 }
 
+static void handle_move_lap_animation_stopped(Animation *anim, bool finished, void *data) {
+	int i=*((int*)data);
+	Layer *window_layer = window_get_root_layer(window_stopwatch);
+	GRect bounds = layer_get_frame(window_layer);	
+	const int16_t width = bounds.size.w - ACTION_BAR_WIDTH - 3;
+	layer_set_frame(text_layer_get_layer(text_layers[i]),GRect(3,-5+((i-TEXT_LAYER_LAP)*21), width, 24));
+	handle_general_animation_stopped(anim, finished, data);
+}
+
 void update_lap(Timer* timer,uint8_t i){
 	timer_setLapTime(timer,(char*)text_layer_get_text(text_layers[TEXT_LAYER_LAP+i]),i,false);
 	layer_mark_dirty((Layer *)text_layers[TEXT_LAYER_LAP+i]);
@@ -146,16 +155,49 @@ void update_laps(bool animate){
 		animation_schedule((Animation*) animations[*data]);
 		lap_count--;
 	}
-	for(uint8_t i=lap_count;i<actual_count;i++){//add
-		text_layer_buffers[TEXT_LAYER_LAP+i]=(char *)malloc(17*sizeof(char));
-		text_layers[TEXT_LAYER_LAP+i] = text_layer_create(GRect(3,-5+(i*21), width, 24));
-		text_layer_set_text(text_layers[TEXT_LAYER_LAP+i], text_layer_buffers[TEXT_LAYER_LAP+i]);
-		text_layer_set_font(text_layers[TEXT_LAYER_LAP+i],fonts_get_system_font(FONT_KEY_GOTHIC_24));
-		text_layer_set_text_alignment(text_layers[TEXT_LAYER_LAP+i],GTextAlignmentLeft);
-		text_layer_set_text_color(text_layers[TEXT_LAYER_LAP+i],GColorWhite);
-		text_layer_set_background_color(text_layers[TEXT_LAYER_LAP+i],GColorClear);
-		layer_add_child(laps_layer, text_layer_get_layer(text_layers[TEXT_LAYER_LAP+i]));
+	uint8_t diff=actual_count-lap_count;
+	APP_LOG(APP_LOG_LEVEL_INFO,"before for diff:%d, actual:%d, laps:%d",diff,actual_count,lap_count);
+	for(int8_t i=actual_count-1;i>=diff;i--){//shift
+		int* data=malloc(sizeof(int));
+		*data=TEXT_LAYER_LAP+i;
+		text_layer_buffers[*data]=text_layer_buffers[TEXT_LAYER_LAP+i-diff];
+		text_layers[*data]=text_layers[TEXT_LAYER_LAP+i-diff];
+		APP_LOG(APP_LOG_LEVEL_INFO,"iterace %d slot dest:%d  slot from:%d",i,*data,TEXT_LAYER_LAP+i-diff);
+		if(!animate){
+			handle_move_lap_animation_stopped(NULL, false, data);
+			continue;
+		}
+		GRect to_frame = GRect(3,-5+(i*21), width, 24);
+		animation_clear(*data);
+		animations[*data]=property_animation_create_layer_frame((Layer*)text_layers[*data],NULL,&to_frame);
+		animation_set_handlers((Animation*) animations[*data], (AnimationHandlers) {
+        .stopped = (AnimationStoppedHandler) handle_move_lap_animation_stopped,
+      }, data);
+		animation_schedule((Animation*) animations[*data]);
+	}
+	for(uint8_t i=0;i<diff;i++){//add
+		animation_clear(ANIMATION_LAP+i);
+		GRect to_frame = GRect(3,-5+(i*21), width, 24);
+		int* data=malloc(sizeof(int));
+		*data=TEXT_LAYER_LAP+i;
+		text_layer_buffers[*data]=(char *)malloc(17*sizeof(char));
+		text_layers[*data] = text_layer_create(GRect(3,-5+(-1*21), width, 24));
+		text_layer_set_text(text_layers[*data], text_layer_buffers[*data]);
+		text_layer_set_font(text_layers[*data],fonts_get_system_font(FONT_KEY_GOTHIC_24));
+		text_layer_set_text_alignment(text_layers[*data],GTextAlignmentLeft);
+		text_layer_set_text_color(text_layers[*data],GColorWhite);
+		text_layer_set_background_color(text_layers[*data],GColorClear);
+		layer_add_child(laps_layer, text_layer_get_layer(text_layers[*data]));
 		lap_count++;
+		if(!animate){
+			handle_move_lap_animation_stopped(NULL, false, data);
+			continue;
+		}
+		animations[*data]=property_animation_create_layer_frame((Layer*)text_layers[*data],NULL,&to_frame);
+		animation_set_handlers((Animation*) animations[*data], (AnimationHandlers) {
+        .stopped = (AnimationStoppedHandler) handle_move_lap_animation_stopped,
+      }, data);
+		animation_schedule((Animation*) animations[*data]);
 	}
 	scroll_layer_set_content_size(scroll_layer,GSize(width,21*(lap_count)));
 	for(uint8_t i=0;i<lap_count;i++){//update text
@@ -318,6 +360,7 @@ static void window_unload(Window* window){
 	for(uint8_t i=0;i<ANIMATIONS_COUNT;i++){
 		animation_clear(i);
 	}
+	lap_count=0;
 	inverter_layer_destroy(line);
 	inverter_layer_destroy(laps_mark);
 	bitmap_layer_destroy(state);
