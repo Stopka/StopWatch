@@ -139,7 +139,6 @@ void update_laps(bool animate){
       }, data);
 		animation_schedule((Animation*) animations[*data]);
 	}
-	APP_LOG(APP_LOG_LEVEL_DEBUG,"remove");
 	for(int8_t i=lap_count-1;i>=actual_count;i--){//remove
 		animation_clear(ANIMATION_LAP+i);
 		int* data=malloc(sizeof(int));
@@ -157,7 +156,6 @@ void update_laps(bool animate){
 		animation_schedule((Animation*) animations[*data]);
 	}
 	int8_t diff=actual_count-lap_count;
-	APP_LOG(APP_LOG_LEVEL_DEBUG,"shift actual:%d diff:%d laps:%d",actual_count,diff,lap_count);
 	for(int8_t i=actual_count-1;i>=diff&&diff>0;i--){//shift
 		int* data=malloc(sizeof(int));
 		*data=TEXT_LAYER_LAP+i;
@@ -175,7 +173,6 @@ void update_laps(bool animate){
       }, data);
 		animation_schedule((Animation*) animations[*data]);
 	}
-	APP_LOG(APP_LOG_LEVEL_DEBUG,"add actual:%d diff:%d laps:%d",actual_count,diff,lap_count);
 	for(uint8_t i=0;i<diff;i++){//add
 		animation_clear(ANIMATION_LAP+i);
 		GRect to_frame = GRect(3,-5+(i*21), width, 24);
