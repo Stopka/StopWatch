@@ -38,16 +38,19 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data) {
-  return 2;
+  return 3;
 }
 
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
   switch (section_index) {
-    case 0:
+    case 0://Stopwatches
       return timers_count();
+		
+		case 1://Timers
+      return 0;
 
-    case 1:
-      return timers_isSpace()?1:0;
+    case 2://Add new menu
+      return timers_isSpace()?2:0;
 
     default:
       return 0;
@@ -63,9 +66,13 @@ static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, ui
     case 0:
       menu_cell_basic_header_draw(ctx, cell_layer, "Stopwatches");
       break;
-
-    case 1:
-      menu_cell_basic_header_draw(ctx, cell_layer,"Controls");
+		
+		case 1:
+      menu_cell_basic_header_draw(ctx, cell_layer,"Timers");
+      break;
+		
+    case 2:
+      menu_cell_basic_header_draw(ctx, cell_layer,"Add new");
       break;
   }
 }
@@ -98,19 +105,16 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 			}
       break;
 
-    case 1:
+    case 2:
       switch (cell_index->row) {
         case 0:
-					menu_cell_basic_draw(ctx,cell_layer,"Add",NULL,bitmaps_get_bitmap(RESOURCE_ID_STOPWATCH));
-					graphics_draw_bitmap_in_rect(ctx,bitmaps_get_bitmap(RESOURCE_ID_ACTION_PLUS),GRect(18, 25, 14, 14));
+					menu_cell_basic_draw(ctx,cell_layer,"Stopwatch",NULL,bitmaps_get_bitmap(RESOURCE_ID_STOPWATCH));
           break;
 				case 1:
-					//menu_cell_basic_draw(ctx,cell_layer,"Timer",NULL,bitmaps_get_bitmap(RESOURCE_ID_TIMER_ADD));
-          break;
-				case 2:
-          menu_cell_title_draw(ctx, cell_layer, "All...");
+					menu_cell_basic_draw(ctx,cell_layer,"Timer",NULL,bitmaps_get_bitmap(RESOURCE_ID_TIMER));
           break;
       }
+			graphics_draw_bitmap_in_rect(ctx,bitmaps_get_bitmap(RESOURCE_ID_ACTION_PLUS),GRect(18, 25, 14, 14));
   }
 }
 
@@ -120,7 +124,7 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
 			timers_select(cell_index->row);
 			window_stopwatch_show();
 			break;
-		case 1:
+		case 2:
 			switch (cell_index->row) {
 				case 0:
 					//Add stopwatch
@@ -129,9 +133,6 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
 			  		break;
 				case 1:
 					//Add timer
-			  		break;
-				case 2:
-					//All...
 			  		break;
 			break;
 			}

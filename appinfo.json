@@ -9,6 +9,11 @@
     "resources": {
         "media": [
             {
+                "file": "images/timer.png",
+                "name": "TIMER",
+                "type": "png"
+            },
+            {
                 "file": "images/action_plus.png",
                 "name": "ACTION_PLUS",
                 "type": "png"
