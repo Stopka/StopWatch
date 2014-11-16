@@ -9,18 +9,13 @@
     "resources": {
         "media": [
             {
-                "file": "images/stopwatch_stopped.png",
-                "name": "STOPWATCH_STOPPED",
+                "file": "images/action_plus.png",
+                "name": "ACTION_PLUS",
                 "type": "png"
             },
             {
-                "file": "images/stopwatch_running.png",
-                "name": "STOPWATCH_RUNNING",
-                "type": "png"
-            },
-            {
-                "file": "images/stopwatch_paused.png",
-                "name": "STOPWATCH_PAUSED",
+                "file": "images/stopwatch.png",
+                "name": "STOPWATCH",
                 "type": "png"
             },
             {
@@ -61,16 +56,6 @@
             {
                 "file": "images/action_down.png",
                 "name": "ACTION_DOWN",
-                "type": "png"
-            },
-            {
-                "file": "images/timer_add.png",
-                "name": "TIMER_ADD",
-                "type": "png"
-            },
-            {
-                "file": "images/stopwatch_add.png",
-                "name": "STOPWATCH_ADD",
                 "type": "png"
             },
             {

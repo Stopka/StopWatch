@@ -78,16 +78,17 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 			switch(timer_getDirection(t)){
 				case TIMER_DIRECTION_UP:
 					switch(timer_getStatus(t)){
-						case TIMER_STATUS_STOPPED: res_id=RESOURCE_ID_STOPWATCH_STOPPED; break;
-  					case TIMER_STATUS_RUNNING: res_id=RESOURCE_ID_STOPWATCH_RUNNING; break;
-  					case TIMER_STATUS_PAUSED: res_id=RESOURCE_ID_STOPWATCH_PAUSED; break;
+						case TIMER_STATUS_STOPPED: res_id=RESOURCE_ID_ACTION_STOP; break;
+  					case TIMER_STATUS_RUNNING: res_id=RESOURCE_ID_ACTION_START; break;
+  					case TIMER_STATUS_PAUSED: res_id=RESOURCE_ID_ACTION_PAUSE; break;
 						default: return;
 					}
 					char* title=(char *)malloc(12*sizeof(char));//"00 00:00:00";
 					char* subtitle=(char *)malloc(17*sizeof(char));//"000 00:00:00.00";
 					timer_setStopwatchTotalTime(t,title,0,true);
 					timer_setLapTime(t,subtitle,0,true);
-					menu_cell_basic_draw(ctx,cell_layer,title,subtitle,bitmaps_get_bitmap(res_id));
+					menu_cell_basic_draw(ctx,cell_layer,title,subtitle,bitmaps_get_bitmap(RESOURCE_ID_STOPWATCH));
+					graphics_draw_bitmap_in_rect(ctx,bitmaps_get_bitmap(res_id),GRect(18, 25, 14, 14));
 					free(title);
 					free(subtitle);
 					break;
@@ -100,10 +101,11 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
     case 1:
       switch (cell_index->row) {
         case 0:
-					menu_cell_basic_draw(ctx,cell_layer,"Add",NULL,bitmaps_get_bitmap(RESOURCE_ID_STOPWATCH_ADD));
+					menu_cell_basic_draw(ctx,cell_layer,"Add",NULL,bitmaps_get_bitmap(RESOURCE_ID_STOPWATCH));
+					graphics_draw_bitmap_in_rect(ctx,bitmaps_get_bitmap(RESOURCE_ID_ACTION_PLUS),GRect(18, 25, 14, 14));
           break;
 				case 1:
-					menu_cell_basic_draw(ctx,cell_layer,"Timer",NULL,bitmaps_get_bitmap(RESOURCE_ID_TIMER_ADD));
+					//menu_cell_basic_draw(ctx,cell_layer,"Timer",NULL,bitmaps_get_bitmap(RESOURCE_ID_TIMER_ADD));
           break;
 				case 2:
           menu_cell_title_draw(ctx, cell_layer, "All...");
