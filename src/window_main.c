@@ -3,6 +3,7 @@
 #include "timers.h"
 #include "bitmap-loader.h"
 #include "window_stopwatch.h"
+#include "window_timer_set.h"
 	
 static void window_load(Window* window);
 static void window_appear(Window* window);
@@ -133,6 +134,7 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
 			  		break;
 				case 1:
 					//Add timer
+						window_timer_set_show();
 			  		break;
 			break;
 			}
