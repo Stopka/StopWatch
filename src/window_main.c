@@ -3,6 +3,7 @@
 #include "timers.h"
 #include "bitmap-loader.h"
 #include "window_stopwatch.h"
+#include "localize.h"
 	
 static void window_load(Window* window);
 static void window_appear(Window* window);
@@ -61,11 +62,11 @@ static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
 static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
   switch (section_index) {
     case 0:
-      menu_cell_basic_header_draw(ctx, cell_layer, "Stopwatches");
+      menu_cell_basic_header_draw(ctx, cell_layer, _("Stopwatches"));
       break;
 
     case 1:
-      menu_cell_basic_header_draw(ctx, cell_layer,"Controls");
+      menu_cell_basic_header_draw(ctx, cell_layer, _("Controls"));
       break;
   }
 }
@@ -100,13 +101,13 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
     case 1:
       switch (cell_index->row) {
         case 0:
-					menu_cell_basic_draw(ctx,cell_layer,"Add",NULL,bitmaps_get_bitmap(RESOURCE_ID_STOPWATCH_ADD));
+					menu_cell_basic_draw(ctx,cell_layer,_("Add"),NULL,bitmaps_get_bitmap(RESOURCE_ID_STOPWATCH_ADD));
           break;
 				case 1:
-					menu_cell_basic_draw(ctx,cell_layer,"Timer",NULL,bitmaps_get_bitmap(RESOURCE_ID_TIMER_ADD));
+					menu_cell_basic_draw(ctx,cell_layer,_("Timer"),NULL,bitmaps_get_bitmap(RESOURCE_ID_TIMER_ADD));
           break;
 				case 2:
-          menu_cell_title_draw(ctx, cell_layer, "All...");
+          menu_cell_title_draw(ctx, cell_layer, _("All..."));
           break;
       }
   }

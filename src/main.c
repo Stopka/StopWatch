@@ -7,6 +7,7 @@ void handle_init() {
 	timers_init();
 	
 	bitmaps_init();
+	locale_init();
 	
 	window_main_init();
 	window_stopwatch_init();
