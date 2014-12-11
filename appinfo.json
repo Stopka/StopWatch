@@ -9,8 +9,88 @@
     "resources": {
         "media": [
             {
-                "file": "images/icon16.png",
-                "name": "ICON16",
+                "file": "data/locale_german.bin",
+                "name": "LOCALE_GERMAN",
+                "type": "raw"
+            },
+            {
+                "file": "data/locale_spanish.bin",
+                "name": "LOCALE_SPANISH",
+                "type": "raw"
+            },
+            {
+                "file": "data/locale_french.bin",
+                "name": "LOCALE_FRENCH",
+                "type": "raw"
+            },
+            {
+                "file": "data/locale_english.bin",
+                "name": "LOCALE_ENGLISH",
+                "type": "raw"
+            },
+            {
+                "file": "images/stopwatch_stopped.png",
+                "name": "STOPWATCH_STOPPED",
+                "type": "png"
+            },
+            {
+                "file": "images/stopwatch_running.png",
+                "name": "STOPWATCH_RUNNING",
+                "type": "png"
+            },
+            {
+                "file": "images/stopwatch_paused.png",
+                "name": "STOPWATCH_PAUSED",
+                "type": "png"
+            },
+            {
+                "file": "images/action_pause.png",
+                "name": "ACTION_PAUSE",
+                "type": "png"
+            },
+            {
+                "file": "images/action_delete.png",
+                "name": "ACTION_DELETE",
+                "type": "png"
+            },
+            {
+                "file": "images/stopwatch16.png",
+                "name": "STOPWATCH16",
+                "type": "png"
+            },
+            {
+                "file": "images/action_stop.png",
+                "name": "ACTION_STOP",
+                "type": "png"
+            },
+            {
+                "file": "images/action_start.png",
+                "name": "ACTION_START",
+                "type": "png"
+            },
+            {
+                "file": "images/action_reset.png",
+                "name": "ACTION_RESET",
+                "type": "png"
+            },
+            {
+                "file": "images/action_lap.png",
+                "name": "ACTION_LAP",
+                "type": "png"
+            },
+            {
+                "file": "images/action_down.png",
+                "name": "ACTION_DOWN",
+                "type": "png"
+            },
+            {
+                "file": "images/timer_add.png",
+                "name": "TIMER_ADD",
+                "type": "png"
+            },
+            {
+                "file": "images/stopwatch_add.png",
+                "name": "STOPWATCH_ADD",
                 "type": "png"
             },
             {
@@ -20,87 +100,10 @@
                 "type": "png"
             },
             {
-                "file": "images/stopwatch_add.png",
-                "name": "STOPWATCH_ADD",
+                "file": "images/icon16.png",
+                "name": "ICON16",
                 "type": "png"
-            },
-            {
-                "file": "images/timer_add.png",
-                "name": "TIMER_ADD",
-                "type": "png"
-            },
-            {
-                "file": "images/action_down.png",
-                "name": "ACTION_DOWN",
-                "type": "png"
-            },
-            {
-                "file": "images/action_lap.png",
-                "name": "ACTION_LAP",
-                "type": "png"
-            },
-            {
-                "file": "images/action_reset.png",
-                "name": "ACTION_RESET",
-                "type": "png"
-            },
-            {
-                "file": "images/action_start.png",
-                "name": "ACTION_START",
-                "type": "png"
-            },
-            {
-                "file": "images/action_stop.png",
-                "name": "ACTION_STOP",
-                "type": "png"
-            },
-            {
-                "file": "images/stopwatch16.png",
-                "name": "STOPWATCH16",
-                "type": "png"
-            },
-            {
-                "file": "images/action_delete.png",
-                "name": "ACTION_DELETE",
-                "type": "png"
-            },
-            {
-                "file": "images/action_pause.png",
-                "name": "ACTION_PAUSE",
-                "type": "png"
-            },
-            {
-                "file": "images/stopwatch_paused.png",
-                "name": "STOPWATCH_PAUSED",
-                "type": "png"
-            },
-            {
-                "file": "images/stopwatch_running.png",
-                "name": "STOPWATCH_RUNNING",
-                "type": "png"
-            },
-            {
-                "file": "images/stopwatch_stopped.png",
-                "name": "STOPWATCH_STOPPED",
-                "type": "png"
-            },
-	    {
-	      "type": "raw",
-	      "name": "LOCALE_ENGLISH",
-	      "file": "locale_english.bin"
-	    }, {
-	      "type": "raw",
-	      "name": "LOCALE_FRENCH",
-	      "file": "locale_french.bin"
-	    }, {
-	      "type": "raw",
-	      "name": "LOCALE_SPANISH",
-	      "file": "locale_spanish.bin"
-	    }, {
-	      "type": "raw",
-	      "name": "LOCALE_GERMAN",
-	      "file": "locale_german.bin"
-	    }
+            }
         ]
     },
     "shortName": "StopWatch",

@@ -3,6 +3,8 @@
 #include "timers.h"
 #include "window_main.h"
 #include "window_stopwatch.h"
+#include "localize.h"
+	
 void handle_init() {
 	timers_init();
 	
