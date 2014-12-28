@@ -9,6 +9,26 @@
     "resources": {
         "media": [
             {
+                "file": "images/action_vibration.png",
+                "name": "ACTION_VIBRATION",
+                "type": "png"
+            },
+            {
+                "file": "images/action_confirm.png",
+                "name": "ACTION_CONFIRM",
+                "type": "png"
+            },
+            {
+                "file": "images/timer16.png",
+                "name": "TIMER16",
+                "type": "png"
+            },
+            {
+                "file": "images/action_edit.png",
+                "name": "ACTION_EDIT",
+                "type": "png"
+            },
+            {
                 "file": "images/icon16.png",
                 "name": "ICON16",
                 "type": "png"

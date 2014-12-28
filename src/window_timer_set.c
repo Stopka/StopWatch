@@ -53,7 +53,7 @@ static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t secti
 }
 
 static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
-  return MENU_CELL_BASIC_HEADER_HEIGHT;
+  return section_index==2?MENU_CELL_BASIC_HEADER_HEIGHT/3:MENU_CELL_BASIC_HEADER_HEIGHT;
 }
 
 static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
@@ -72,7 +72,7 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
     case 0://Durations
 			switch(cell_index->row){
 				case 0: 
-					menu_cell_basic_draw(ctx,cell_layer,("000 00:00:00"),NULL,bitmaps_get_bitmap(RESOURCE_ID_ACTION_DELETE));
+					menu_cell_basic_draw(ctx,cell_layer,("000 00:00:00"),NULL,bitmaps_get_bitmap(RESOURCE_ID_ACTION_EDIT));
 					break;
 				case 1:
 					menu_cell_basic_draw(ctx,cell_layer,("Add duration"),NULL,bitmaps_get_bitmap(RESOURCE_ID_ACTION_PLUS));
@@ -86,13 +86,13 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 					menu_cell_basic_draw(ctx,cell_layer,("Repeat"),("Off"),bitmaps_get_bitmap(RESOURCE_ID_ACTION_LAP));
 					break;
 				case 1:
-					menu_cell_basic_draw(ctx,cell_layer,("Vibration"),("Long"),bitmaps_get_bitmap(RESOURCE_ID_ACTION_DOWN));
+					menu_cell_basic_draw(ctx,cell_layer,("Vibration"),("Long"),bitmaps_get_bitmap(RESOURCE_ID_ACTION_VIBRATION));
 					break;
 			}
       break;
 		
 		case 2://Confirm
-			menu_cell_basic_draw(ctx,cell_layer,("Save"),NULL,bitmaps_get_bitmap(RESOURCE_ID_TIMER));
+			menu_cell_basic_draw(ctx,cell_layer,("Save"),NULL,bitmaps_get_bitmap(RESOURCE_ID_ACTION_CONFIRM));
       break;
   }
 }
@@ -118,7 +118,7 @@ static void window_load(Window* window){
 	layer_add_child(window_layer, menu_layer_get_layer(menu_layer));
 	menu_layer_set_click_config_onto_window(menu_layer, window);
 	
-	window_set_status_bar_icon(window,bitmaps_get_bitmap(RESOURCE_ID_ICON16));	
+	window_set_status_bar_icon(window,bitmaps_get_bitmap(RESOURCE_ID_TIMER16));	
 }
 
 static void window_appear(Window *window) {
