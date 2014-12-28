@@ -73,7 +73,7 @@ static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, ui
       break;
 		
     case 2:
-      menu_cell_basic_header_draw(ctx, cell_layer,_("Add new"));
+      menu_cell_basic_header_draw(ctx, cell_layer,_("Add new..."));
       break;
   }
 }
@@ -108,14 +108,11 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 
     case 2:
       switch (cell_index->row) {
-        case 0:
-	  menu_cell_basic_draw(ctx,cell_layer,_("Add"),NULL,bitmaps_get_bitmap(RESOURCE_ID_STOPWATCH_ADD));
-          break;
-	case 1:
-	  menu_cell_basic_draw(ctx,cell_layer,_("Timer"),NULL,bitmaps_get_bitmap(RESOURCE_ID_TIMER_ADD));
-          break;
-	case 2:
-          menu_cell_title_draw(ctx, cell_layer, _("All..."));
+	    	case 0:
+	  			menu_cell_basic_draw(ctx,cell_layer,_("Stopwatch"),NULL,bitmaps_get_bitmap(RESOURCE_ID_STOPWATCH));
+      		break;
+				case 1:
+	  			menu_cell_basic_draw(ctx,cell_layer,_("Timer"),NULL,bitmaps_get_bitmap(RESOURCE_ID_TIMER));
           break;
       }
       graphics_draw_bitmap_in_rect(ctx,bitmaps_get_bitmap(RESOURCE_ID_ACTION_PLUS),GRect(18, 25, 14, 14));
@@ -134,11 +131,11 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
 					//Add stopwatch
 					timers_add_stopwatch();
 					window_stopwatch_show();
-			  		break;
+			  	break;
 				case 1:
 					//Add timer
 					window_timer_set_show();
-			  		break;
+			  	break;
 			break;
 			}
 	}
