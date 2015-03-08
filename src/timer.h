@@ -24,6 +24,7 @@ typedef struct Timer {
 
 Timer* timer_create();
 Timer* timer_create_stopwatch();
+Timer* timer_create_timer();
 TimerStatus timer_getStatus(Timer*);
 TimerDirection timer_getDirection(Timer*);
 void timer_start(Timer*);

@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include "timers.h"
+#include "count.h"
 
 #define STORAGE_VERSION 1
 #define STORAGE_KEY_VERSION 0
@@ -7,7 +8,8 @@
 #define STORAGE_KEY_DATA 2
 	
 Timer* timers[TIMERS_MAX_COUNT];
-uint8_t count=0;
+
+Count* count;
 int8_t selected=-1;
 
 uint8_t timers_add(Timer*);
@@ -27,11 +29,12 @@ void storage_load(){
 		APP_LOG(APP_LOG_LEVEL_ERROR,"no count"); 
 		return;
 	}
-	uint8_t storage_count=(uint8_t)persist_read_int(STORAGE_KEY_COUNT);
-	APP_LOG(APP_LOG_LEVEL_INFO,"storage count: %d",storage_count);
+	Count* storage_count=count_create();
+	persist_read_data(STORAGE_KEY_COUNT,storage_count,sizeof(Count));
+	APP_LOG(APP_LOG_LEVEL_INFO,"storage count: %d",count_total(storage_count));
 	Timer* timer;
 	int result;
-	for(uint8_t i=0;i<storage_count;i++){
+	for(uint8_t i=0;i<count_total(storage_count);i++){
 		if(!persist_exists(STORAGE_KEY_DATA+i)){ 
 			APP_LOG(APP_LOG_LEVEL_ERROR,"missing timer %d in storage %d",i,STORAGE_KEY_DATA+i); 
 			continue;
@@ -51,25 +54,50 @@ void storage_load(){
 }
 
 void timers_init() {
-  APP_LOG(APP_LOG_LEVEL_INFO,"timers_init()");
+	APP_LOG(APP_LOG_LEVEL_INFO,"timers_init()");
+	count=count_create();
 	storage_load();
 }
 
 uint8_t timers_count() {
-	return count;
+	return timers_timer_count()+timers_stopwatch_count();
+}
+
+uint8_t timers_timer_count(){
+	return count->timer;
+}
+uint8_t timers_stopwatch_count(){
+	return count->stopwatch;
 }
 
 uint8_t timers_add(Timer* timer) {
-	uint8_t pos=count++;
+	uint8_t pos;
+	if(timer_getDirection(timer)==TIMER_DIRECTION_UP){
+		pos=count->stopwatch;
+		for(uint8_t i=count_total(count);i>pos;i--){
+			timers[i]=timers[i-1];
+		}
+		count->stopwatch++;
+	}else{
+		pos=count_total(count);
+		count->timer++;
+	}
 	timers[pos]=timer;
 	return pos;
 }
 
 Timer* timers_add_stopwatch() {
-	if(count>=TIMERS_MAX_COUNT){
+	if(timers_count()>=TIMERS_MAX_COUNT){
 		return NULL;
 	}
 	return timers_select(timers_add(timer_create_stopwatch()));
+}
+
+Timer* timers_add_timer() {
+	if(timers_count()>=TIMERS_MAX_COUNT){
+		return NULL;
+	}
+	return timers_select(timers_add(timer_create_timer()));
 }
 
 Timer* timers_select(uint8_t pos) {
@@ -78,7 +106,7 @@ Timer* timers_select(uint8_t pos) {
 }
 
 bool timers_isSpace() {
-	return count<TIMERS_MAX_COUNT;
+	return timers_count()<TIMERS_MAX_COUNT;
 }
 
 Timer* timers_get_selected() {
@@ -100,9 +128,13 @@ void timers_remove(uint8_t pos) {
 	if(selected>pos){
 		selected--;
 	}
+	if(timer_getDirection(timers[pos])==TIMER_DIRECTION_UP){
+		count->stopwatch--;
+	}else{
+		count->timer--;
+	}
 	timer_destroy(timers[pos]);
-	count--;
-	for(uint8_t i=pos;i<count;i++){
+	for(uint8_t i=pos;i<timers_count();i++){
 		timers[i]=timers[i+1];
 	}
 }
@@ -137,12 +169,12 @@ void storage_store(){
 		APP_LOG(APP_LOG_LEVEL_ERROR,"delete error count in storage %d #%d",STORAGE_KEY_COUNT,result); 
 		return;
 	}*/
-	result=persist_write_int(STORAGE_KEY_COUNT,c);
+	result=persist_write_data(STORAGE_KEY_COUNT,count,sizeof(Count));
 	if(result<0){
-		APP_LOG(APP_LOG_LEVEL_ERROR,"write error count %d in storage %d #%d",c,STORAGE_KEY_COUNT,result); 
+		APP_LOG(APP_LOG_LEVEL_ERROR,"write error count %d in storage %d #%d",count_total(count),STORAGE_KEY_COUNT,result); 
 		return;
 	}
-	APP_LOG(APP_LOG_LEVEL_INFO,"timer count %d",c);
+	APP_LOG(APP_LOG_LEVEL_INFO,"timer count %d",count_total(count));
 	
 	Timer* timer;
 	for(uint8_t i=0;i<c;i++){
@@ -167,8 +199,9 @@ void timers_deinit(void) {
 	storage_store();
 	
 	APP_LOG(APP_LOG_LEVEL_INFO,"cleaning..");
-  for(uint8_t i=0;i<count;i++){
+  for(uint8_t i=0;i<count_total(count);i++){
 		free(timers[i]);
 	}
+	count_destroy(count);
 	APP_LOG(APP_LOG_LEVEL_INFO,"cleaned");
 }
