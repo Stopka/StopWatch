@@ -4,6 +4,7 @@
 #include "bitmap-loader.h"
 #include "window_stopwatch.h"
 #include "window_timer_set.h"
+#include "window_timer_duration_set.h"
 #include "localize.h"
 	
 static void window_load(Window* window);
@@ -135,7 +136,7 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
 			  	break;
 				case 1:
 					//Add timer
-					window_timer_set_show();
+					window_timer_duration_set_show();
 			  	break;
 			break;
 			}

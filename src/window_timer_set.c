@@ -39,10 +39,10 @@ static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
   switch (section_index) {
     case 0://Durations
-      return 2;
+      return 1;
 		
     case 1://Settings
-      return 2;
+      return 3;
 		
 		case 2://Confirm
       return 1;
@@ -59,7 +59,7 @@ static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
 static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
   switch (section_index) {
     case 0:
-      menu_cell_basic_header_draw(ctx, cell_layer, ("Durations"));
+      menu_cell_basic_header_draw(ctx, cell_layer, ("Duration"));
       break;
     case 1:
       menu_cell_basic_header_draw(ctx, cell_layer,("Settings"));
@@ -87,6 +87,9 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 					break;
 				case 1:
 					menu_cell_basic_draw(ctx,cell_layer,("Vibration"),("Long"),bitmaps_get_bitmap(RESOURCE_ID_ACTION_VIBRATION));
+					break;
+				case 2:
+					menu_cell_basic_draw(ctx,cell_layer,("Dismiss"),("Manual"),bitmaps_get_bitmap(RESOURCE_ID_ACTION_RESET));
 					break;
 			}
       break;
@@ -124,7 +127,6 @@ static void window_load(Window* window){
 static void window_appear(Window *window) {
 	APP_LOG(APP_LOG_LEVEL_INFO,"window_appear()");
 	menu_layer_reload_data(menu_layer);
-	int8_t index=timers_get_selectedIndex();
 	menu_layer_set_selected_index(menu_layer,(MenuIndex){
 		.section=0,
 		.row=0
