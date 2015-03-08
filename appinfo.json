@@ -9,6 +9,11 @@
     "resources": {
         "media": [
             {
+                "file": "images/action_minus.png",
+                "name": "ACTION_MINUS",
+                "type": "png"
+            },
+            {
                 "file": "images/action_vibration.png",
                 "name": "ACTION_VIBRATION",
                 "type": "png"

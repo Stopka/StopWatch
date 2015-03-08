@@ -159,7 +159,7 @@ static void window_load(Window* window){
   action_bar_layer_set_click_config_provider(action_bar_layer,click_config_provider);
 	action_bar_layer_set_icon(action_bar_layer, BUTTON_ID_UP, bitmaps_get_bitmap(RESOURCE_ID_ACTION_PLUS));
 	action_bar_layer_set_icon(action_bar_layer, BUTTON_ID_SELECT, bitmaps_get_bitmap(RESOURCE_ID_ACTION_CONFIRM));
-  action_bar_layer_set_icon(action_bar_layer, BUTTON_ID_DOWN, bitmaps_get_bitmap(RESOURCE_ID_ACTION_PLUS));
+  action_bar_layer_set_icon(action_bar_layer, BUTTON_ID_DOWN, bitmaps_get_bitmap(RESOURCE_ID_ACTION_MINUS));
 	
 	window_set_status_bar_icon(window,bitmaps_get_bitmap(RESOURCE_ID_TIMER16));	
 }
