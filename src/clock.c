@@ -31,7 +31,7 @@ Clock* clock_clone(Clock* t){
 }
 
 Clock* clock_createActual(){
-	Clock* result=(Clock*) malloc(sizeof(Clock));
+	Clock* result=clock_createNull();
 	time_ms	(&result->sec,&result->ms);
 	return result;
 }
@@ -42,6 +42,26 @@ Clock* clock_createNull(){
 	return result;
 }
 
+Clock* clock_create(int* vals){
+	Clock* result=clock_createNull();
+	result->ms=vals[4];
+	int units[4]={60*60*24,60*60,60,1};
+	for(int8_t i=3;i>=0;i++){
+		result->sec+=units[i]*vals[i];
+	}
+	return result;
+}
+
+int* clock_getVals(Clock* c){
+	int* r=(int*) malloc(5*sizeof(int));
+	r[0]=(c->sec/(60*60*24));//days
+	r[1]=(c->sec/(60*60))%24;//hours
+	r[2]=(c->sec/60)%60;//minutes
+	r[3]=c->sec%60;//secs
+	r[4]=c->ms;//ms
+	return r;
+}
+
 void clock_destroy(Clock* c){
 	free(c);
 }
@@ -50,7 +70,7 @@ bool clock_isNull(Clock * time){
 	return time->sec==0 && time->ms==0;;
 }
 
-int clock_compare(Clock* a,Clock* b){
+int8_t clock_compare(Clock* a,Clock* b){
 	if(a->sec>b->sec){
 		return 1;
 	}
