@@ -88,6 +88,10 @@ Clock* timer_get_stopwatch_lap_time(Timer* timer,uint8_t i,bool total){
 	return clock_subtract(to,from);
 }
 
+Clock* timer_get_timer_lap_time(Timer* timer,uint8_t i,bool total){
+	return NULL;
+}
+
 uint8_t timer_setStopwatchTotalTime(Timer* timer,char* string,uint8_t lap,bool shorter){
 	uint8_t measure_offset;
 	Clock* time=timer_get_stopwatch_lap_time(timer,lap,true);;

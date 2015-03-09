@@ -22,16 +22,18 @@ typedef struct Timer {
   bool repeat;
 } __attribute__((__packed__)) Timer;
 
-Timer* timer_create();
-Timer* timer_create_stopwatch();
-Timer* timer_create_timer();
-TimerStatus timer_getStatus(Timer*);
-TimerDirection timer_getDirection(Timer*);
-void timer_start(Timer*);
-void timer_stop(Timer*);
-void timer_lap(Timer*);
-void timer_reset(Timer*);
-void timer_destroy(Timer*);
+Timer* timer_create();//General constructor (for persitent load)
+Timer* timer_create_stopwatch();//Stopwatch constructor
+Timer* timer_create_timer();//Timer constructor
+TimerStatus timer_getStatus(Timer*);//returns status (running...)
+TimerDirection timer_getDirection(Timer*);//returns if it is stopwatch/timer
+void timer_start(Timer*);//action start
+void timer_stop(Timer*);//action start
+void timer_lap(Timer*);//action new lap (only for stopwatch)
+void timer_reset(Timer*);//action reset
+void timer_destroy(Timer*);//destructor
 
+//formats total time text to string buffer (rest for timer = ignores lap, lap total time for stopwatch), shorter means for menu view
 uint8_t timer_setStopwatchTotalTime(Timer* timer,char* string,uint8_t lap,bool shorter );
+//formats lap time text to string buffer
 uint8_t timer_setLapTime(Timer* timer,char* string,uint8_t lap,bool shorter);

@@ -10,14 +10,20 @@ void laps_reset(Laps* laps){
 }
 
 void laps_add(Laps* laps,Clock* clock){
-	//APP_LOG(APP_LOG_LEVEL_DEBUG,"laps_add()");
 	for(uint8_t i=LAPS_MAX_COUNT-1;i>0;i--){
-			//APP_LOG(APP_LOG_LEVEL_DEBUG,"move clock(%d,%d) %d>%d",(int)laps->times[i].sec,laps->times[i].ms,i-1,i);
 			laps->times[i]=laps->times[i-1];
 	}
-	//APP_LOG(APP_LOG_LEVEL_DEBUG,"save clock(%d,%d) >0",(int)clock->sec,clock->ms);
 	laps->times[0]=*clock;
 	laps->count++;
+}
+
+void laps_insert(Laps* laps,Clock* clock){
+	if(!laps||laps_isFull(laps)){ return; }
+	laps->times[laps->count++]=*clock;
+}
+
+bool laps_isFull(Laps* laps){
+	return laps_count(laps)>=LAPS_MAX_COUNT;
 }
 
 void laps_start(Laps* laps,Clock* clock,bool restart){
