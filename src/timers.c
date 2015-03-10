@@ -105,6 +105,14 @@ Timer* timers_select(uint8_t pos) {
 	return timers_get_selected();
 }
 
+Timer* timers_timer_select(uint8_t pos) {
+	return timers_select(pos+timers_stopwatch_count());
+}
+
+Timer* timers_stopwatch_select(uint8_t pos) {
+	return timers_select(pos);
+}
+
 bool timers_isSpace() {
 	return timers_count()<TIMERS_MAX_COUNT;
 }

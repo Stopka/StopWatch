@@ -47,10 +47,10 @@ static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
   switch (section_index) {
     case 0://Stopwatches
-      return timers_count();
+      return timers_stopwatch_count();
 		
     case 1://Timers
-      return 0;
+      return timers_timer_count();
 
     case 2://Add new menu
       return timers_isSpace()?2:0;
@@ -79,34 +79,34 @@ static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, ui
   }
 }
 
-static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
-	Timer* t;
+void drawTimer(GContext* ctx, const Layer *cell_layer, uint8_t id, bool stopwatch){
+	Timer* t=timers_get(id);
 	uint32_t res_id;
-  switch (cell_index->section) {
+	switch(timer_getStatus(t)){
+		case TIMER_STATUS_STOPPED: res_id=RESOURCE_ID_ACTION_STOP; break;
+		case TIMER_STATUS_RUNNING: res_id=RESOURCE_ID_ACTION_START; break;
+		case TIMER_STATUS_PAUSED: res_id=RESOURCE_ID_ACTION_PAUSE; break;
+		default: return;
+	}
+	char* title=(char *)malloc(12*sizeof(char));//"00 00:00:00";
+	char* subtitle=(char *)malloc(17*sizeof(char));//"000 00:00:00.00";
+	timer_setStopwatchTotalTime(t,title,0,true);
+	timer_setLapTime(t,subtitle,0,true);
+	menu_cell_basic_draw(ctx,cell_layer,title,subtitle,bitmaps_get_bitmap(stopwatch?RESOURCE_ID_STOPWATCH:RESOURCE_ID_TIMER));
+	graphics_draw_bitmap_in_rect(ctx,bitmaps_get_bitmap(res_id),GRect(18, 25, 14, 14));
+	free(title);
+	free(subtitle);
+}
+
+static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
+	switch (cell_index->section) {
     case 0:
-			t=timers_get((uint8_t)cell_index->row);
-			switch(timer_getDirection(t)){
-				case TIMER_DIRECTION_UP:
-					switch(timer_getStatus(t)){
-						case TIMER_STATUS_STOPPED: res_id=RESOURCE_ID_ACTION_STOP; break;
-  					case TIMER_STATUS_RUNNING: res_id=RESOURCE_ID_ACTION_START; break;
-  					case TIMER_STATUS_PAUSED: res_id=RESOURCE_ID_ACTION_PAUSE; break;
-						default: return;
-					}
-					char* title=(char *)malloc(12*sizeof(char));//"00 00:00:00";
-					char* subtitle=(char *)malloc(17*sizeof(char));//"000 00:00:00.00";
-					timer_setStopwatchTotalTime(t,title,0,true);
-					timer_setLapTime(t,subtitle,0,true);
-					menu_cell_basic_draw(ctx,cell_layer,title,subtitle,bitmaps_get_bitmap(RESOURCE_ID_STOPWATCH));
-					graphics_draw_bitmap_in_rect(ctx,bitmaps_get_bitmap(res_id),GRect(18, 25, 14, 14));
-					free(title);
-					free(subtitle);
-					break;
-				case TIMER_DIRECTION_DOWN:
-					//TODO
-					break;
-			}
-      break;
+			drawTimer(ctx,cell_layer,(uint8_t)cell_index->row, true);
+			break;
+		
+		case 1:
+			drawTimer(ctx,cell_layer,timers_stopwatch_count()+(uint8_t)cell_index->row, false);
+			break;
 
     case 2:
       switch (cell_index->row) {
@@ -124,7 +124,11 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 	switch (cell_index->section) {
 		case 0:
-			timers_select(cell_index->row);
+			timers_stopwatch_select(cell_index->row);
+			window_stopwatch_show();
+			break;
+		case 1:
+			timers_timer_select(cell_index->row);
 			window_stopwatch_show();
 			break;
 		case 2:
@@ -163,14 +167,34 @@ static void window_load(Window* window){
 	window_set_status_bar_icon(window,bitmaps_get_bitmap(RESOURCE_ID_ICON16));	
 }
 
+void updateSelection(){
+	int8_t index=timers_get_selectedIndex();
+	if(index>=0&&index<timers_stopwatch_count()){
+		menu_layer_set_selected_index(window_main_menu_layer,(MenuIndex){
+			.section=0,
+			.row=index
+		},MenuRowAlignCenter,false);
+		return;
+	}
+	if(index>=timers_stopwatch_count()&&index<timers_count()){
+		menu_layer_set_selected_index(window_main_menu_layer,(MenuIndex){
+			.section=1,
+			.row=index-timers_stopwatch_count()
+		},MenuRowAlignCenter,false);
+		return;
+	}
+	menu_layer_set_selected_index(window_main_menu_layer,(MenuIndex){
+			.section=0,
+			.row=0
+		},MenuRowAlignCenter,false);
+}
+
 static void window_appear(Window *window) {
 	APP_LOG(APP_LOG_LEVEL_INFO,"window_appear()");
 	menu_layer_reload_data(window_main_menu_layer);
-	int8_t index=timers_get_selectedIndex();
-	menu_layer_set_selected_index(window_main_menu_layer,(MenuIndex){
-		.section=timers_count()>0?0:1,
-		.row=index<0?0:index
-	},MenuRowAlignCenter,false);
+	
+	updateSelection();
+	
 	layer_mark_dirty((Layer *)window_main_menu_layer);
 	tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
 }

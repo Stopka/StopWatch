@@ -148,7 +148,9 @@ static void window_load(Window* window){
 	GRect bounds = layer_get_frame(window_layer);
 	for(int i=0;i<4;i++){
 		strings[i]=(char *)malloc((i==3?4:3)*sizeof(char));
+		values[i]=0;
 	}
+	values[4]=0;
 	menu_layer=menu_layer_create(bounds);
 	menu_layer_set_callbacks(menu_layer, NULL, (MenuLayerCallbacks){
 		.get_num_sections = menu_get_num_sections_callback,
