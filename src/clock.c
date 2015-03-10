@@ -46,7 +46,7 @@ Clock* clock_create(int* vals){
 	Clock* result=clock_createNull();
 	result->ms=vals[4];
 	int units[4]={60*60*24,60*60,60,1};
-	for(int8_t i=3;i>=0;i++){
+	for(int8_t i=0;i<4;i++){
 		result->sec+=units[i]*vals[i];
 	}
 	return result;

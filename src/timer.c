@@ -138,7 +138,7 @@ Clock* timer_get_timer_lap_time(Timer* timer,uint8_t lap,bool total){
 
 uint8_t timer_setStopwatchTotalTime(Timer* timer,char* string,uint8_t lap,bool shorter){
 	uint8_t measure_offset;
-	Clock* time=timer_get_stopwatch_lap_time(timer,lap,true);
+	Clock* time=timer_getDirection(timer)==TIMER_DIRECTION_UP?timer_get_stopwatch_lap_time(timer,lap,true):timer_get_timer_lap_time(timer,lap,true);
 	int* vals=clock_getVals(time);
 	if(vals[0]/100>0){
 			snprintf(string, 12, "%04d %02d:%02d", vals[0],vals[1],vals[2]);
@@ -161,7 +161,7 @@ uint8_t timer_setStopwatchTotalTime(Timer* timer,char* string,uint8_t lap,bool s
 
 uint8_t timer_setLapTime(Timer* timer,char* string,uint8_t lap,bool shorter){
 	uint8_t measure_offset;
-	Clock* time=timer_get_stopwatch_lap_time(timer,lap,false);
+	Clock* time=timer_getDirection(timer)==TIMER_DIRECTION_UP?timer_get_stopwatch_lap_time(timer,lap,false):timer_get_timer_lap_time(timer,lap,false);
 	uint8_t lap_numer=laps_get_number(&timer->laps,lap);
 	int* vals=clock_getVals(time);
 	if(vals[0]/100>0){

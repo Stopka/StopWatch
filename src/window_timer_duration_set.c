@@ -1,8 +1,10 @@
 #include <pebble.h>
 #include "window_timer_duration_set.h"
 
-#include <pebble.h>
+#include "window_stopwatch.h"
+	
 #include "timers.h"
+#include "laps.h"
 #include "bitmap-loader.h"
 #include "window_timer_set.h"
 #include "localize.h"
@@ -16,7 +18,7 @@ static Window*    window;
 static MenuLayer*    menu_layer;
 static ActionBarLayer* action_bar_layer;
 
-uint16_t values[5];
+int* values;
 uint16_t limits[4]={1000,24,60,60};
 char* strings[4];
 
@@ -107,6 +109,10 @@ static void handle_click_select(ClickRecognizerRef recognizer, void *context){//
 		index.row++;
 	}else{
 		//TODO zavřít, hotovo
+		Timer* timer=timers_add_timer();
+		laps_setVals(&timer->laps, 0, values);
+		window_stopwatch_show();
+		window_stack_remove(window, false);
 	}
 	menu_layer_set_selected_index(menu_layer,index,MenuRowAlignCenter,true);
 }
@@ -138,6 +144,7 @@ void click_config_provider(void *context) {
 static void window_load(Window* window){
 	APP_LOG(APP_LOG_LEVEL_INFO,"window_load()");
 	Layer *window_layer = window_get_root_layer(window);
+	values=(int*)malloc(5*sizeof(int));
 	GRect bounds = layer_get_frame(window_layer);
 	for(int i=0;i<4;i++){
 		strings[i]=(char *)malloc((i==3?4:3)*sizeof(char));
@@ -186,4 +193,5 @@ static void window_unload(Window* window){
 	for(int i=0;i<4;i++){
 		free(strings[i]);
 	}
+	free(values);
 }

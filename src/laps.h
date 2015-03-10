@@ -16,6 +16,7 @@ void laps_add(Laps*,Clock*);//Adds new lap to the front, can oveflow counter (fo
 void laps_insert(Laps*,Clock*);//Adds new lap to the end, can't oveflow counter (for timer)
 bool laps_isFull(Laps*);//true if there is no room for new lap insert
 Clock* laps_get(Laps* laps,int8_t i);//return lap on position
+void laps_setVals(Laps* laps,int8_t i,int* vals);//sets clock made by vals on position
 uint8_t laps_count(Laps* laps);//Number of added laps
 void laps_destroy(Laps*);//laps destructor
 

@@ -49,6 +49,12 @@ Clock* laps_get(Laps* laps,int8_t i){
 	return &laps->times[i];
 }
 
+void laps_setVals(Laps* laps,int8_t i,int* vals){
+	Clock* c=clock_create(vals);
+	laps->times[i]=*c;
+	clock_destroy(c);
+}
+
 uint16_t laps_get_number(Laps* laps,uint8_t i){
 	return (laps->count-i)%1000;
 }
