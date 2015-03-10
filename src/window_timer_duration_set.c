@@ -16,7 +16,7 @@ static Window*    window;
 static MenuLayer*    menu_layer;
 static ActionBarLayer* action_bar_layer;
 
-uint16_t values[4];
+uint16_t values[5];
 uint16_t limits[4]={1000,24,60,60};
 char* strings[4];
 
