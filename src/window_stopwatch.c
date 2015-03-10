@@ -118,7 +118,6 @@ void update_selected(bool animated){
 }
 
 void update_laps(bool animate){
-	APP_LOG(APP_LOG_LEVEL_DEBUG,"init");
 	Layer *window_layer = window_get_root_layer(window_stopwatch);
 	GRect bounds = layer_get_frame(window_layer);	
 	const int16_t width = bounds.size.w - ACTION_BAR_WIDTH - 3;

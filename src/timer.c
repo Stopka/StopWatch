@@ -107,13 +107,14 @@ Clock* timer_get_stopwatch_lap_time(Timer* timer,uint8_t i,bool total){
 }
 
 uint8_t timer_getActualLap(Timer* timer){
-	Clock* from=&timer->started;
+	Clock* from=clock_clone(&timer->started);
 	Clock* to=timer_get_end(timer);
 	uint8_t lap;
-	for(lap=0;clock_compare(from,to)<0;lap++){
-		clock_subtract(to,laps_get(&timer->laps,lap));
+	for(lap=0;clock_compare(to,from)<0&&lap<laps_count(&timer->laps);lap++){
+		clock_add(from,laps_get(&timer->laps,lap));
 	}
 	clock_destroy(to);
+	clock_destroy(from);
 	return lap-1;
 }
 
