@@ -94,7 +94,7 @@ void update_lap(Timer* timer,uint8_t i){
 
 void update_time(){
 	Timer* timer=timers_get_selected();
-	timer_setStopwatchTotalTime(timer,(char*)text_layer_get_text(text_layers[TEXT_LAYER_TIME]),selected_lap,false);
+	timer_setTotalTime(timer,(char*)text_layer_get_text(text_layers[TEXT_LAYER_TIME]),selected_lap,false);
 	layer_mark_dirty((Layer *)text_layers[TEXT_LAYER_TIME]);
 	update_lap(timer,0);
 }

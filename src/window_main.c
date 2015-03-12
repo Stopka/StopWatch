@@ -91,7 +91,8 @@ void drawTimer(GContext* ctx, const Layer *cell_layer, uint8_t id, bool stopwatc
 	char* title=(char *)malloc(12*sizeof(char));//"00 00:00:00";
 	char* subtitle=(char *)malloc(17*sizeof(char));//"000 00:00:00.00";
 	uint8_t lap=0;//stopwatch?0:timer_getActualLap(t);
-	timer_setStopwatchTotalTime(t,title,lap,true);
+	APP_LOG(APP_LOG_LEVEL_DEBUG,"lap= %d",timer_getActualLap(t));
+	timer_setTotalTime(t,title,lap,true);
 	timer_setLapTime(t,subtitle,lap,true);
 	menu_cell_basic_draw(ctx,cell_layer,title,subtitle,bitmaps_get_bitmap(stopwatch?RESOURCE_ID_STOPWATCH:RESOURCE_ID_TIMER));
 	graphics_draw_bitmap_in_rect(ctx,bitmaps_get_bitmap(res_id),GRect(18, 25, 14, 14));

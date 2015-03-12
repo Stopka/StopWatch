@@ -35,6 +35,6 @@ void timer_destroy(Timer*);//destructor
 uint8_t timer_getActualLap(Timer*);//gets number of actual lap running(only for timer)
 
 //formats total time text to string buffer (rest for timer = ignores lap, lap total time for stopwatch), shorter means for menu view
-uint8_t timer_setStopwatchTotalTime(Timer* timer,char* string,uint8_t lap,bool shorter );
+uint8_t timer_setTotalTime(Timer* timer,char* string,uint8_t lap,bool shorter );
 //formats lap time text to string buffer
 uint8_t timer_setLapTime(Timer* timer,char* string,uint8_t lap,bool shorter);
