@@ -29,12 +29,11 @@ void storage_load(){
 		APP_LOG(APP_LOG_LEVEL_ERROR,"no count"); 
 		return;
 	}
-	Count* storage_count=count_create();
-	persist_read_data(STORAGE_KEY_COUNT,storage_count,sizeof(Count));
-	APP_LOG(APP_LOG_LEVEL_INFO,"storage count: %d",count_total(storage_count));
+	uint8_t storage_count=(uint8_t)persist_read_int(STORAGE_KEY_COUNT);
+ 	APP_LOG(APP_LOG_LEVEL_INFO,"storage count: %d",storage_count);
 	Timer* timer;
 	int result;
-	for(uint8_t i=0;i<count_total(storage_count);i++){
+	for(uint8_t i=0;i<storage_count;i++){
 		if(!persist_exists(STORAGE_KEY_DATA+i)){ 
 			APP_LOG(APP_LOG_LEVEL_ERROR,"missing timer %d in storage %d",i,STORAGE_KEY_DATA+i); 
 			continue;
@@ -161,23 +160,13 @@ void storage_store(){
 	int result;
 	uint8_t c=timers_count();
 	
-	/*result=persist_delete(STORAGE_KEY_VERSION);
-	if(result<0){
-		APP_LOG(APP_LOG_LEVEL_ERROR,"delete error version in storage %d #%d",STORAGE_KEY_VERSION,result); 
-		return;
-	}*/
 	result=persist_write_int(STORAGE_KEY_VERSION,STORAGE_VERSION);
 	if(result<0){
-		APP_LOG(APP_LOG_LEVEL_ERROR,"write error version %d in storage %d #%d",STORAGE_VERSION,STORAGE_KEY_VERSION,result); 
+		APP_LOG(APP_LOG_LEVEL_ERROR,"write error count %d in storage %d #%d",c,STORAGE_KEY_COUNT,result);  
 		return;
 	}
 	
-	/*result=persist_delete(STORAGE_KEY_COUNT);
-	if(result<0){
-		APP_LOG(APP_LOG_LEVEL_ERROR,"delete error count in storage %d #%d",STORAGE_KEY_COUNT,result); 
-		return;
-	}*/
-	result=persist_write_data(STORAGE_KEY_COUNT,count,sizeof(Count));
+	result=persist_write_int(STORAGE_KEY_COUNT,c);
 	if(result<0){
 		APP_LOG(APP_LOG_LEVEL_ERROR,"write error count %d in storage %d #%d",count_total(count),STORAGE_KEY_COUNT,result); 
 		return;
@@ -187,11 +176,6 @@ void storage_store(){
 	Timer* timer;
 	for(uint8_t i=0;i<c;i++){
 		timer=timers_get(i);
-		/*result=persist_delete(STORAGE_KEY_DATA+(2*i));
-		if(result<0){
-			APP_LOG(APP_LOG_LEVEL_ERROR,"delete error timer %d in storage %d #%d",i,STORAGE_KEY_DATA+(2*i),result); 
-			continue;
-		}*/
 		result=persist_write_data(STORAGE_KEY_DATA+i,timer,sizeof(Timer));
 		if(result<0){
 			APP_LOG(APP_LOG_LEVEL_ERROR,"write error timer %d in storage %d #%d",i,STORAGE_KEY_DATA+i,result); 
