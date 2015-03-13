@@ -59,6 +59,24 @@ void handleAlarm(void* data){
 	//window_alarm_show();
 }
 
+void updateNearest(){
+	uint8_t min;
+	Clock* minc=NULL;
+	for(uint8_t i=timers_stopwatch_count();i<timers_timer_count();i++){
+		Timer* t=timers_get(i);
+		Clock* c=timer_getNextFinish(t);
+		if(minc==NULL||clock_compare(minc,c)>){
+			clock_destroy(minc);
+			minc=c;
+			min=i;
+		}else{
+			clock_destroy(minc);
+		}
+	}
+	nearest=min;
+	scheduler_update(minc);
+}
+
 void timers_init() {
 	APP_LOG(APP_LOG_LEVEL_INFO,"timers_init()");
 	count=count_create();

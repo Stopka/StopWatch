@@ -27,6 +27,7 @@ Timer* timer_create_stopwatch();//Stopwatch constructor
 Timer* timer_create_timer();//Timer constructor
 TimerStatus timer_getStatus(Timer*);//returns status (running...)
 TimerDirection timer_getDirection(Timer*);//returns if it is stopwatch/timer
+Clock* timer_getNextFinish(Timer*);//counts finish time of actual timer lap (only for timers)
 void timer_start(Timer*);//action start
 void timer_stop(Timer*);//action start
 void timer_lap(Timer*);//action new lap (only for stopwatch)

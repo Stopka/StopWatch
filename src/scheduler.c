@@ -36,6 +36,7 @@ void scheduleWakeUp(){
 }
 
 void scheduler_update(Clock* c){
+	clock_destroy(timer_clock);
 	timer_clock=c;
 	scheduleAppTimer();
 }

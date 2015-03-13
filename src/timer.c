@@ -112,6 +112,7 @@ uint8_t timer_getActualLap(Timer* timer){
 	if(timer_getDirection(timer)==TIMER_DIRECTION_UP){
 		return 0;
 	}
+	//TODO
 	Clock* from=clock_clone(&timer->started);
 	Clock* to=timer_get_end(timer);
 	uint8_t lap;
