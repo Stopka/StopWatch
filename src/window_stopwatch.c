@@ -288,7 +288,6 @@ static void window_load(Window* window){
 	Layer *window_layer = window_get_root_layer(window);
 	GRect bounds = layer_get_frame(window_layer);
 	
-	window_set_status_bar_icon(window,bitmaps_get_bitmap(RESOURCE_ID_STOPWATCH16));
 	window_set_background_color	(window,GColorBlack);
 	
 	const int16_t width = bounds.size.w - ACTION_BAR_WIDTH - 3;
@@ -334,7 +333,9 @@ static void window_load(Window* window){
 static void window_appear(Window *window) {
 	APP_LOG(APP_LOG_LEVEL_INFO,"window_appear()");
 	Timer* timer=timers_get_selected();
-	selected_lap=0;
+	bool stopwatch=timer_getDirection(timer)==TIMER_DIRECTION_UP;
+	window_set_status_bar_icon(window,bitmaps_get_bitmap(stopwatch?RESOURCE_ID_STOPWATCH16:RESOURCE_ID_TIMER16));
+	selected_lap=0;//timer_getActualLap(timer);
 	update_selected(false);
 	if(timer_getStatus(timer)==TIMER_STATUS_RUNNING){
 		tick_timer_service_subscribe(SECOND_UNIT, handle_tick);

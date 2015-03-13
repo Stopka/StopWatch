@@ -109,6 +109,9 @@ Clock* timer_get_stopwatch_lap_time(Timer* timer,uint8_t i,bool total){
 }
 
 uint8_t timer_getActualLap(Timer* timer){
+	if(timer_getDirection(timer)==TIMER_DIRECTION_UP){
+		return 0;
+	}
 	Clock* from=clock_clone(&timer->started);
 	Clock* to=timer_get_end(timer);
 	uint8_t lap;
