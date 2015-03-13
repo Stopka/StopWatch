@@ -205,9 +205,11 @@ void update_laps(bool animate){
 
 void update_state(){
 	Timer* timer=timers_get_selected();
+	bool stopwatch=timer_getDirection(timer)==TIMER_DIRECTION_UP;
+	action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, stopwatch?bitmaps_get_bitmap(RESOURCE_ID_ACTION_DOWN):NULL);
 	switch(timer_getStatus(timer)){
 		case TIMER_STATUS_RUNNING:
-			action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, bitmaps_get_bitmap_in_group(RESOURCE_ID_ACTION_LAP,BITMAP_GROUP_BUTTON_UP));
+			action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, stopwatch?bitmaps_get_bitmap_in_group(RESOURCE_ID_ACTION_LAP,BITMAP_GROUP_BUTTON_UP):NULL);
 			action_bar_layer_set_icon(action_bar, BUTTON_ID_SELECT, bitmaps_get_bitmap(RESOURCE_ID_ACTION_PAUSE));
 			bitmap_layer_set_bitmap(state,bitmaps_get_bitmap(RESOURCE_ID_ACTION_START));
 			break;
@@ -322,7 +324,6 @@ static void window_load(Window* window){
 	action_bar=action_bar_layer_create();
 	action_bar_layer_add_to_window(action_bar, window);
 	action_bar_layer_set_background_color(action_bar,GColorWhite);
-	action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, bitmaps_get_bitmap(RESOURCE_ID_ACTION_DOWN));
 	action_bar_layer_set_click_config_provider(action_bar,click_config_provider);
 	
 	update_laps(false);
