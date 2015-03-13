@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include "window_alarm.h"
+#include "bitmap-loader.h"
 
 static void window_load(Window* window);
 static void window_appear(Window* window);

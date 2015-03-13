@@ -13,6 +13,7 @@ Clock* clock_create(int*);//constructor from int array (days,hours,min,sec,ms)
 Clock* clock_createActual();//contructor actual time
 Clock* clock_createNull();//constructor 0
 int* clock_getVals(Clock* c);//returns array of values (days,hours,min,sec,ms)
+uint32_t clock_getMS(Clock* c);//converts to milisec timestamp
 void clock_destroy(Clock* c);//destructor
 bool clock_isNull(Clock * clock);//is 0?
 int8_t clock_compare(Clock* a,Clock* b);//0:a=b 1:a>b -1:a<b

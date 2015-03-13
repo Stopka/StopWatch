@@ -1,6 +1,7 @@
 #include <pebble.h>
 #include "timers.h"
 #include "count.h"
+#include "scheduler.h"
 
 #define STORAGE_VERSION 1
 #define STORAGE_KEY_VERSION 0
@@ -11,6 +12,7 @@ Timer* timers[TIMERS_MAX_COUNT];
 
 Count* count;
 int8_t selected=-1;
+int8_t nearest=-1;
 
 uint8_t timers_add(Timer*);
 
@@ -52,10 +54,16 @@ void storage_load(){
 	APP_LOG(APP_LOG_LEVEL_INFO,"loaded");
 }
 
+void handleAlarm(void* data){
+	APP_LOG(APP_LOG_LEVEL_INFO,"timer finished");
+	//window_alarm_show();
+}
+
 void timers_init() {
 	APP_LOG(APP_LOG_LEVEL_INFO,"timers_init()");
 	count=count_create();
 	storage_load();
+	scheduler_init(handleAlarm,&nearest);
 }
 
 uint8_t timers_count() {
@@ -195,5 +203,6 @@ void timers_deinit(void) {
 		free(timers[i]);
 	}
 	count_destroy(count);
+	scheduler_deinit();
 	APP_LOG(APP_LOG_LEVEL_INFO,"cleaned");
 }
