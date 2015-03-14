@@ -2,6 +2,7 @@
 #include "timers.h"
 #include "count.h"
 #include "scheduler.h"
+#include "window_alarm.h"
 
 #define STORAGE_VERSION 1
 #define STORAGE_KEY_VERSION 0
@@ -56,32 +57,17 @@ void storage_load(){
 
 void handleAlarm(void* data){
 	APP_LOG(APP_LOG_LEVEL_INFO,"timer finished");
-	//window_alarm_show();
+	window_alarm_show();
 }
 
-void updateNearest(){
-	uint8_t min;
-	Clock* minc=NULL;
-	for(uint8_t i=timers_stopwatch_count();i<timers_timer_count();i++){
-		Timer* t=timers_get(i);
-		Clock* c=timer_getNextFinish(t);
-		if(minc==NULL||clock_compare(minc,c)>){
-			clock_destroy(minc);
-			minc=c;
-			min=i;
-		}else{
-			clock_destroy(minc);
-		}
-	}
-	nearest=min;
-	scheduler_update(minc);
-}
+void timers_updateNearest();
 
 void timers_init() {
 	APP_LOG(APP_LOG_LEVEL_INFO,"timers_init()");
 	count=count_create();
 	storage_load();
 	scheduler_init(handleAlarm,&nearest);
+	timers_updateNearest();
 }
 
 uint8_t timers_count() {
@@ -170,6 +156,7 @@ void timers_remove(uint8_t pos) {
 	for(uint8_t i=pos;i<timers_count();i++){
 		timers[i]=timers[i+1];
 	}
+	timers_updateNearest();
 }
 
 void timers_remove_selected() {
@@ -223,4 +210,39 @@ void timers_deinit(void) {
 	count_destroy(count);
 	scheduler_deinit();
 	APP_LOG(APP_LOG_LEVEL_INFO,"cleaned");
+}
+
+void timers_selected_start(){
+	timer_start(timers_get_selected());
+	timers_updateNearest();
+}
+void timers_selected_stop(){
+	timer_stop(timers_get_selected());
+	timers_updateNearest();
+}
+void timers_selected_lap(){
+	timer_lap(timers_get_selected());
+	timers_updateNearest();
+}
+void timers_selected_reset(){
+	timer_reset(timers_get_selected());
+	timers_updateNearest();
+}
+
+void timers_updateNearest(){
+	uint8_t min=0;
+	Clock* minc=NULL;
+	for(uint8_t i=timers_stopwatch_count();i<timers_timer_count();i++){
+		Timer* t=timers_get(i);
+		Clock* c=timer_getNextFinish(t);
+		if(c!=NULL&&(minc==NULL||clock_compare(minc,c)>0)){
+			clock_destroy(minc);
+			minc=c;
+			min=i;
+		}else{
+			clock_destroy(minc);
+		}
+	}
+	nearest=min;
+	scheduler_update(minc);
 }

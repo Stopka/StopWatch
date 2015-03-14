@@ -112,16 +112,32 @@ uint8_t timer_getActualLap(Timer* timer){
 	if(timer_getDirection(timer)==TIMER_DIRECTION_UP){
 		return 0;
 	}
-	//TODO
 	Clock* from=clock_clone(&timer->started);
 	Clock* to=timer_get_end(timer);
 	uint8_t lap;
-	for(lap=0;clock_compare(to,from)<0&&lap<laps_count(&timer->laps);lap++){
+	for(lap=0;clock_compare(to,from)>=0&&lap<laps_count(&timer->laps);lap++){
 		clock_add(from,laps_get(&timer->laps,lap));
 	}
 	clock_destroy(to);
 	clock_destroy(from);
 	return lap-1;
+}
+
+Clock* timer_getNextFinish(Timer* timer){
+	if(timer_getDirection(timer)==TIMER_DIRECTION_UP){
+		return NULL;
+	}
+	if(timer_getStatus(timer)!=TIMER_STATUS_RUNNING){
+		return NULL;
+	}
+	Clock* from=clock_clone(&timer->started);
+	Clock* to=timer_get_end(timer);
+	for(uint8_t lap=0;clock_compare(to,from)>=0&&lap<laps_count(&timer->laps);lap++){
+		APP_LOG(APP_LOG_LEVEL_DEBUG,"Adding lap %d",lap);
+		clock_add(from,laps_get(&timer->laps,lap));
+	}
+	clock_destroy(to);
+	return from;
 }
 
 Clock* timer_get_timer_lap_time(Timer* timer,uint8_t lap,bool total){

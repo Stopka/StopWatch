@@ -236,11 +236,11 @@ void handle_click_up(ClickRecognizerRef recognizer, void *context){
 	Timer* timer=timers_get_selected();
 	switch(timer_getStatus(timer)){
 		case TIMER_STATUS_RUNNING://new lap
-			timer_lap(timer);
+			timers_selected_lap();
 			update_laps(true);
 			break;
 		case TIMER_STATUS_PAUSED://reset
-			timer_reset(timer);
+			timers_selected_reset();
 			update_state();
 			update_laps(true);
 			selected_lap=0;
@@ -257,11 +257,11 @@ void handle_click_select(ClickRecognizerRef recognizer, void *context){
 	Timer* timer=timers_get_selected();
 	switch(timer_getStatus(timer)){
 		case TIMER_STATUS_RUNNING:
-			timer_stop(timer);
+			timers_selected_stop();
 			tick_timer_service_unsubscribe();
 			break;
 		default:
-			timer_start(timer);
+			timers_selected_start();
 			tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
 	}
 	update_state();

@@ -10,7 +10,7 @@ static void window_unload(Window* window);
 static Window* window;
 
 void window_alarm_show() {
-	window_stack_push(window, true);
+	window_stack_push(window, false);
 }
 
 void window_alarm_init(){
