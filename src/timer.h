@@ -34,6 +34,7 @@ void timer_lap(Timer*);//action new lap (only for stopwatch)
 void timer_reset(Timer*);//action reset
 void timer_destroy(Timer*);//destructor
 uint8_t timer_getActualLap(Timer*);//gets number of actual lap running
+void timer_checkEnd(Timer*);//check if timer had ended, if so stops and resets timer, returns true if timer any lap ended
 
 //formats total time text to string buffer (rest for timer = ignores lap, lap total time for stopwatch), shorter means for menu view
 uint8_t timer_setTotalTime(Timer* timer,char* string,uint8_t lap,bool shorter );

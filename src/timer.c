@@ -108,7 +108,7 @@ Clock* timer_get_stopwatch_lap_time(Timer* timer,uint8_t i,bool total){
 	return clock_subtract(to,from);
 }
 
-uint8_t timer_getActualLap(Timer* timer){
+uint8_t timer_getActualLap(Timer* timer){//neozkoušeno
 	if(timer_getDirection(timer)==TIMER_DIRECTION_UP){
 		return 0;
 	}
@@ -133,7 +133,6 @@ Clock* timer_getNextFinish(Timer* timer){
 	Clock* from=clock_clone(&timer->started);
 	Clock* to=timer_get_end(timer);
 	for(uint8_t lap=0;clock_compare(to,from)>=0&&lap<laps_count(&timer->laps);lap++){
-		APP_LOG(APP_LOG_LEVEL_DEBUG,"Adding lap %d",lap);
 		clock_add(from,laps_get(&timer->laps,lap));
 	}
 	clock_destroy(to);
@@ -208,4 +207,21 @@ uint8_t timer_setLapTime(Timer* timer,char* string,uint8_t lap,bool shorter){
 	free(vals);
 	clock_destroy(time);
 	return measure_offset;
+}
+
+void timer_checkEnd(Timer* timer){
+	if(timer_getDirection(timer)==TIMER_DIRECTION_UP){
+		return;
+	}
+	Clock* from=clock_clone(&timer->started);
+	Clock* to=timer_get_end(timer);
+	for(uint8_t lap=0;lap<laps_count(&timer->laps);lap++){
+		clock_add(from,laps_get(&timer->laps,lap));
+	}
+	if(clock_compare(to,from)>=0){
+		APP_LOG(APP_LOG_LEVEL_INFO,"finalizing timer");
+		timer_reset(timer);
+	}
+	clock_destroy(to);
+	clock_destroy(from);
 }

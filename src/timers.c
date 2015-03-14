@@ -55,12 +55,16 @@ void storage_load(){
 	APP_LOG(APP_LOG_LEVEL_INFO,"loaded");
 }
 
+void timers_updateNearest();
+
 void handleAlarm(void* data){
 	APP_LOG(APP_LOG_LEVEL_INFO,"timer finished");
+	for(uint8_t i=timers_stopwatch_count();i<timers_timer_count();i++){
+		timer_checkEnd(timers_get(i));
+	}
 	window_alarm_show();
+	timers_updateNearest();
 }
-
-void timers_updateNearest();
 
 void timers_init() {
 	APP_LOG(APP_LOG_LEVEL_INFO,"timers_init()");
