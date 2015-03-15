@@ -127,8 +127,8 @@
         "aplite"
     ],
     "uuid": "26e94ec2-9f28-4fde-8cdc-0222902b2ebb",
-    "versionCode": 10,
-    "versionLabel": "4.0",
+    "versionCode": 11,
+    "versionLabel": "5.0",
     "watchapp": {
         "watchface": false
     }
