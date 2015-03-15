@@ -239,12 +239,15 @@ void timers_updateNearest(){
 	for(uint8_t i=timers_stopwatch_count();i<timers_count();i++){
 		Timer* t=timers_get(i);
 		Clock* c=timer_getNextFinish(t);
-		if(c!=NULL&&(minc==NULL||clock_compare(minc,c)>0)){
+		if(c==NULL){
+			continue;
+		}
+		if(minc==NULL||clock_compare(minc,c)>0){
 			clock_destroy(minc);
 			minc=c;
 			min=i;
 		}else{
-			clock_destroy(minc);
+			clock_destroy(c);
 		}
 	}
 	nearest=min;
