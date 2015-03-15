@@ -9,33 +9,78 @@
     "resources": {
         "media": [
             {
-                "file": "images/action_minus.png",
-                "name": "ACTION_MINUS",
+                "file": "data/locale_german.bin",
+                "name": "LOCALE_GERMAN",
+                "type": "raw"
+            },
+            {
+                "file": "data/locale_spanish.bin",
+                "name": "LOCALE_SPANISH",
+                "type": "raw"
+            },
+            {
+                "file": "data/locale_french.bin",
+                "name": "LOCALE_FRENCH",
+                "type": "raw"
+            },
+            {
+                "file": "data/locale_english.bin",
+                "name": "LOCALE_ENGLISH",
+                "type": "raw"
+            },
+            {
+                "file": "images/action_stop.png",
+                "name": "ACTION_STOP",
                 "type": "png"
             },
             {
-                "file": "images/action_vibration.png",
-                "name": "ACTION_VIBRATION",
+                "file": "images/action_start.png",
+                "name": "ACTION_START",
                 "type": "png"
             },
             {
-                "file": "images/action_confirm.png",
-                "name": "ACTION_CONFIRM",
+                "file": "images/action_pause.png",
+                "name": "ACTION_PAUSE",
                 "type": "png"
             },
             {
-                "file": "images/timer16.png",
-                "name": "TIMER16",
+                "file": "images/action_delete.png",
+                "name": "ACTION_DELETE",
                 "type": "png"
             },
             {
-                "file": "images/action_edit.png",
-                "name": "ACTION_EDIT",
+                "file": "images/stopwatch16.png",
+                "name": "STOPWATCH16",
                 "type": "png"
             },
             {
-                "file": "images/icon16.png",
-                "name": "ICON16",
+                "file": "images/stopwatch.png",
+                "name": "STOPWATCH",
+                "type": "png"
+            },
+            {
+                "file": "images/timer.png",
+                "name": "TIMER",
+                "type": "png"
+            },
+            {
+                "file": "images/action_reset.png",
+                "name": "ACTION_RESET",
+                "type": "png"
+            },
+            {
+                "file": "images/action_plus.png",
+                "name": "ACTION_PLUS",
+                "type": "png"
+            },
+            {
+                "file": "images/action_lap.png",
+                "name": "ACTION_LAP",
+                "type": "png"
+            },
+            {
+                "file": "images/action_down.png",
+                "name": "ACTION_DOWN",
                 "type": "png"
             },
             {
@@ -45,87 +90,41 @@
                 "type": "png"
             },
             {
-                "file": "images/action_down.png",
-                "name": "ACTION_DOWN",
+                "file": "images/icon16.png",
+                "name": "ICON16",
                 "type": "png"
             },
             {
-                "file": "images/action_lap.png",
-                "name": "ACTION_LAP",
+                "file": "images/action_edit.png",
+                "name": "ACTION_EDIT",
                 "type": "png"
             },
             {
-                "file": "images/action_plus.png",
-                "name": "ACTION_PLUS",
+                "file": "images/timer16.png",
+                "name": "TIMER16",
                 "type": "png"
             },
             {
-                "file": "images/action_reset.png",
-                "name": "ACTION_RESET",
+                "file": "images/action_confirm.png",
+                "name": "ACTION_CONFIRM",
                 "type": "png"
             },
             {
-                "file": "images/timer.png",
-                "name": "TIMER",
+                "file": "images/action_vibration.png",
+                "name": "ACTION_VIBRATION",
                 "type": "png"
             },
             {
-                "file": "images/stopwatch.png",
-                "name": "STOPWATCH",
+                "file": "images/action_minus.png",
+                "name": "ACTION_MINUS",
                 "type": "png"
-            },
-            {
-                "file": "images/stopwatch16.png",
-                "name": "STOPWATCH16",
-                "type": "png"
-            },
-            {
-                "file": "images/action_delete.png",
-                "name": "ACTION_DELETE",
-                "type": "png"
-            },
-            {
-                "file": "images/action_pause.png",
-                "name": "ACTION_PAUSE",
-                "type": "png"
-            },
-            {
-                "file": "images/action_start.png",
-                "name": "ACTION_START",
-                "type": "png"
-            },
-            {
-                "file": "images/action_stop.png",
-                "name": "ACTION_STOP",
-                "type": "png"
-            },
-            {
-                "file": "data/locale_english.bin",
-                "name": "LOCALE_ENGLISH",
-                "type": "raw"
-            },
-            {
-                "file": "data/locale_french.bin",
-                "name": "LOCALE_FRENCH",
-                "type": "raw"
-            },
-            {
-                "file": "data/locale_spanish.bin",
-                "name": "LOCALE_SPANISH",
-                "type": "raw"
-            },
-            {
-                "file": "data/locale_german.bin",
-                "name": "LOCALE_GERMAN",
-                "type": "raw"
             }
         ]
     },
     "sdkVersion": "3",
     "shortName": "StopWatch",
     "targetPlatforms": [
-        "aplite",
-        "basalt"
+        "aplite"
     ],
     "uuid": "26e94ec2-9f28-4fde-8cdc-0222902b2ebb",
     "versionCode": 9,
