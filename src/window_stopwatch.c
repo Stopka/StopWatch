@@ -56,15 +56,13 @@ void window_stopwatch_deinit(){
 void animation_clear(int i){
 	if(animations[i]!=NULL){
 		animation_unschedule((Animation*)animations[i]);
+		property_animation_destroy(animations[i]);
+		animations[i]=NULL;
 	}
 }
 
 static void handle_general_animation_stopped(Animation *anim, bool finished, void *data) {
 	int i=*((int*)data);
-	if(animations[i]!=NULL){
-		property_animation_destroy(animations[i]);
-		animations[i]=NULL;
-	}
 	free (data);
 }
 
