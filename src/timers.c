@@ -59,7 +59,7 @@ void timers_updateNearest();
 
 void handleAlarm(void* data){
 	APP_LOG(APP_LOG_LEVEL_INFO,"timer finished");
-	for(uint8_t i=timers_stopwatch_count();i<timers_timer_count();i++){
+	for(uint8_t i=timers_stopwatch_count();i<timers_count();i++){
 		timer_checkEnd(timers_get(i));
 	}
 	window_alarm_show();
@@ -236,7 +236,7 @@ void timers_selected_reset(){
 void timers_updateNearest(){
 	uint8_t min=0;
 	Clock* minc=NULL;
-	for(uint8_t i=timers_stopwatch_count();i<timers_timer_count();i++){
+	for(uint8_t i=timers_stopwatch_count();i<timers_count();i++){
 		Timer* t=timers_get(i);
 		Clock* c=timer_getNextFinish(t);
 		if(c!=NULL&&(minc==NULL||clock_compare(minc,c)>0)){
