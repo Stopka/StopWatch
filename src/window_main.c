@@ -67,14 +67,14 @@ static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
 static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
   switch (section_index) {
     case 0:
-      menu_cell_basic_header_draw(ctx, cell_layer, ("Stopwatches"));
+      menu_cell_basic_header_draw(ctx, cell_layer, _("Stopwatches"));
       break;
     case 1:
-      menu_cell_basic_header_draw(ctx, cell_layer,("Timers"));
+      menu_cell_basic_header_draw(ctx, cell_layer,_("Timers"));
       break;
 		
     case 2:
-      menu_cell_basic_header_draw(ctx, cell_layer,("Add new..."));
+      menu_cell_basic_header_draw(ctx, cell_layer,_("Add new..."));
       break;
   }
 }
@@ -113,10 +113,10 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
     case 2:
       switch (cell_index->row) {
 	    	case 0:
-	  			menu_cell_basic_draw(ctx,cell_layer,("Stopwatch"),NULL,bitmaps_get_bitmap(RESOURCE_ID_STOPWATCH));
+	  			menu_cell_basic_draw(ctx,cell_layer,_("Stopwatch"),NULL,bitmaps_get_bitmap(RESOURCE_ID_STOPWATCH));
       		break;
 				case 1:
-	  			menu_cell_basic_draw(ctx,cell_layer,("Timer"),NULL,bitmaps_get_bitmap(RESOURCE_ID_TIMER));
+	  			menu_cell_basic_draw(ctx,cell_layer,_("Timer"),NULL,bitmaps_get_bitmap(RESOURCE_ID_TIMER));
           break;
       }
       graphics_draw_bitmap_in_rect(ctx,bitmaps_get_bitmap(RESOURCE_ID_ACTION_PLUS),GRect(18, 25, 14, 14));

@@ -63,7 +63,7 @@ static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
 static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
   switch (section_index) {
     case 0:
-      menu_cell_basic_header_draw(ctx, cell_layer, ("Set duration"));
+      menu_cell_basic_header_draw(ctx, cell_layer, _("Set duration"));
       break;
   }
 }
@@ -74,19 +74,19 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 			switch(cell_index->row){
 				case 0: 
 					snprintf(strings[0], 4, "%03u", values[0]);
-					menu_cell_basic_draw(ctx,cell_layer,("Days"),strings[0],NULL);
+					menu_cell_basic_draw(ctx,cell_layer,_("Days"),strings[0],NULL);
 					break;
 				case 1: 
 					snprintf(strings[1], 3, "%02u", values[1]);
-					menu_cell_basic_draw(ctx,cell_layer,("Hours"),strings[1],NULL);
+					menu_cell_basic_draw(ctx,cell_layer,_("Hours"),strings[1],NULL);
 					break;
 				case 2: 
 					snprintf(strings[2], 3, "%02u", values[2]);
-					menu_cell_basic_draw(ctx,cell_layer,("Minutes"),strings[2],NULL);
+					menu_cell_basic_draw(ctx,cell_layer,_("Minutes"),strings[2],NULL);
 					break;
 				case 3: 
 					snprintf(strings[3], 3, "%02u", values[3]);
-					menu_cell_basic_draw(ctx,cell_layer,("Seconds"),strings[3],NULL);
+					menu_cell_basic_draw(ctx,cell_layer,_("Seconds"),strings[3],NULL);
 					break;
 			}
 			break;

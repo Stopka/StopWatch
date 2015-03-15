@@ -62,7 +62,7 @@ static void window_load(Window* window){
 	layer_add_child(window_layer,bitmap_layer_get_layer(bitmap_layer));
 	
 	text_layer=text_layer_create(GRect(0, (bounds.size.h-18)/4, bounds.size.w-ACTION_BAR_WIDTH, 18));
-	text_layer_set_text(text_layer,("Timer finished"));
+	text_layer_set_text(text_layer,_("Timer finished"));
 	text_layer_set_text_color(text_layer, GColorWhite);
 	text_layer_set_background_color(text_layer,GColorClear);
 	text_layer_set_text_alignment(text_layer,GTextAlignmentCenter);
