@@ -124,7 +124,8 @@
     "sdkVersion": "3",
     "shortName": "StopWatch",
     "targetPlatforms": [
-        "aplite"
+        "aplite",
+	"basalt"
     ],
     "uuid": "26e94ec2-9f28-4fde-8cdc-0222902b2ebb",
     "versionCode": 11,
