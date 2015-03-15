@@ -17,6 +17,7 @@ static MenuLayer*    window_main_menu_layer;
 
 void window_main_show() {
 	window_stack_push(window_main, true);
+	timers_postinit();
 }
 
 void window_main_init(){
@@ -90,8 +91,7 @@ void drawTimer(GContext* ctx, const Layer *cell_layer, uint8_t id, bool stopwatc
 	}
 	char* title=(char *)malloc(12*sizeof(char));//"00 00:00:00";
 	char* subtitle=(char *)malloc(17*sizeof(char));//"000 00:00:00.00";
-	uint8_t lap=0;//stopwatch?0:timer_getActualLap(t);
-	APP_LOG(APP_LOG_LEVEL_DEBUG,"lap= %d",timer_getActualLap(t));
+	uint8_t lap=timer_getActualLap(t);
 	timer_setTotalTime(t,title,lap,true);
 	timer_setLapTime(t,subtitle,lap,true);
 	menu_cell_basic_draw(ctx,cell_layer,title,subtitle,bitmaps_get_bitmap(stopwatch?RESOURCE_ID_STOPWATCH:RESOURCE_ID_TIMER));

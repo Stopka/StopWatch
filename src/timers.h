@@ -4,6 +4,7 @@
 #define TIMERS_MAX_COUNT 10
 
 void timers_init();
+void timers_postinit();
 Timer* timers_add_stopwatch(void);//creates, stores, selects and returns new stopwatch
 Timer* timers_add_timer(void);//creates, stores, selects and returns new timer
 Timer* timers_select(uint8_t pos);//marks timer with that position as selected

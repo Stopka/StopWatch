@@ -71,6 +71,9 @@ void timers_init() {
 	count=count_create();
 	storage_load();
 	scheduler_init(handleAlarm,&nearest);
+}
+
+void timers_postinit(){
 	timers_updateNearest();
 }
 

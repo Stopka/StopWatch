@@ -27,7 +27,7 @@ void handle_deinit() {
 	window_alarm_deinit();
 	window_main_deinit();
 	window_stopwatch_deinit();
-	//window_timer_set_deinit();
+//	window_timer_set_deinit();
 	window_timer_duration_set_deinit();
 	
 	timers_deinit();

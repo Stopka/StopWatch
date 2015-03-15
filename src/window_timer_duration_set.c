@@ -175,6 +175,9 @@ static void window_load(Window* window){
 
 static void window_appear(Window *window) {
 	APP_LOG(APP_LOG_LEVEL_INFO,"window_appear()");
+	for(int i=0;i<4;i++){
+		values[i]=0;
+	}
 	menu_layer_reload_data(menu_layer);
 	menu_layer_set_selected_index(menu_layer,(MenuIndex){
 		.section=0,
